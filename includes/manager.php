@@ -9,7 +9,7 @@ class BuyMeABeer
     public function __construct()
     {
         $this->plugin_slug = 'buyMeABeer';
-        $this->version = '1.0.1';
+        $this->version = '0.0.2';
 
         $this->loadDependencies();
         $this->defineAdminHooks();
