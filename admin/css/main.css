@@ -1,0 +1,14 @@
+h3{
+    clear: both;
+    padding-top: 10px;
+}
+.bmabContent {
+    display: none;
+    position: relative;
+    clear:both;
+    width: 100%;
+    top: 35px;
+}
+.tablenav {
+    margin: 6px 0 12px;
+}
