@@ -2,6 +2,7 @@
 require_once(ABSPATH. "wp-content/plugins/buymeabeer/admin/config.php");
 class BuyMeABeerPaypal {
     public function __construct() {
+        // Todo Sean: These settings need to be filled in automatically.
         $this->paypalAccount = '';
         $this->paypalApi= 'api.sandbox.paypal.com'; // https://api.paypal.com
         $this->paypalClientId = '';
