@@ -8,7 +8,7 @@
  * @wordpress-plugin
  * Plugin Name:       Buy Me A Beer
  * Plugin URI:        http://github.com/Seanmcn/BuyMeABeer
- * Description:       Plugin to add a 'buy me a beer' donation button.
+ * Description:       Plugin to add a 'Buy me a beer' donation button. Easily customisable to be a "Buy Me Whatever" Paypal plugin.
  * Version:           1.0.0
  * Author:            Sean McNamara
  * Author URI:        http://seanmcn.com
