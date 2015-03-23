@@ -3,21 +3,161 @@ require_once(ABSPATH. "wp-content/plugins/buymeabeer/admin/config.php");
 
 class BuyMeABeerAdmin {
 
-    /**
-     * A reference to the version of the plugin that is passed to this class from the caller.
-     *
-     * @access private
-     * @var    string    $version    The current version of the plugin.
-     */
     private $version;
 
-    /**
-     * Initializes this class and stores the current version of this plugin.
-     *
-     * @param    string    $version    The current version of this plugin.
-     */
     public function __construct( $version ) {
         $this->version = $version;
+    }
+
+    function getDescription($id) {
+        global $wpdb;
+        $table = $wpdb->prefix . DESCRIPTIONS_TABLE;
+        $description = $wpdb->get_row("SELECT * FROM $table WHERE id=$id");
+        $json = json_encode($description);
+        return $json;
+    }
+
+    function getDescriptions() {
+        global $wpdb;
+        $table = $wpdb->prefix . DESCRIPTIONS_TABLE;
+        $descriptions = $wpdb->get_results("SELECT * FROM $table");
+        $json = json_encode($descriptions);
+        return $json;
+    }
+
+    function addDescription($title, $description, $image) {
+        global $wpdb;
+        $table = $wpdb->prefix . DESCRIPTIONS_TABLE;
+
+        $wpdb->insert(
+            $table,
+            array(
+                'title' => $title,
+                'description' => $description,
+                'image' => $image
+            ),
+            array(
+                '%s',
+                '%s',
+                '%s'
+            )
+        );
+        return true;
+    }
+
+    function updateDescription($id, $title, $description, $image) {
+        global $wpdb;
+        $table = $wpdb->prefix . DESCRIPTIONS_TABLE;
+
+        $wpdb->update($table,
+            array(
+                'title' => $title,
+                'description' => $description,
+                'image' => $image
+            ),
+            array(
+                'id' => $id
+            ),
+            array(
+                '%s',
+                '%s',
+                '%s'
+            ),
+            array( '%d' )
+        );
+        return true;
+    }
+
+    function removeDescription($id) {
+        global $wpdb;
+        $table = $wpdb->prefix . DESCRIPTIONS_TABLE;
+        $wpdb->delete( $table, array( 'id' => $id ), array( '%d' ) );
+        return true;
+    }
+
+    function getPQ($id) {
+        global $wpdb;
+        $table = $wpdb->prefix . PRICEQUANITY_TABLE;
+        $description = $wpdb->get_row("SELECT * FROM $table WHERE id=$id");
+        $json = json_encode($description);
+        return $json;
+    }
+
+    function getPQs() {
+        global $wpdb;
+        $table = $wpdb->prefix . PRICEQUANITY_TABLE;
+        $pqs = $wpdb->get_results("SELECT * FROM $table");
+        $json = json_encode($pqs);
+        return $json;
+    }
+
+    function addPQ($name, $price) {
+        global $wpdb;
+        $table = $wpdb->prefix . PRICEQUANITY_TABLE;
+
+        $wpdb->insert($table,
+            array(
+                'name' => $name,
+                'price' => $price
+            ),
+            array(
+                '%s',
+                '%d'
+            )
+        );
+        return true;
+    }
+    function updatePQ($id, $name, $price) {
+        global $wpdb;
+        $table = $wpdb->prefix . PRICEQUANITY_TABLE;
+
+        $wpdb->update($table,
+            array(
+                'name' => $name,
+                'price' => $price
+            ),
+            array(
+                'id' => $id
+            ),
+            array(
+                '%s',
+                '%d'
+            ),
+            array(
+                '%d'
+            )
+        );
+        return true;
+    }
+
+    function removePQ($id) {
+        global $wpdb;
+        $table = $wpdb->prefix . PRICEQUANITY_TABLE;
+        $wpdb->delete( $table, array( 'id' => $id ), array( '%d' ) );
+        return true;
+    }
+
+    function updateSettings($paypalMode, $paypalClientId, $paypalSecret, $currency){
+        $settings = array(
+            "bmabPaypalMode" => $paypalMode,
+            "bmabPaypalClientId" => $paypalClientId,
+            "bmabPaypalSecret" => $paypalSecret,
+            "bmabCurrency" => $currency
+        );
+
+        //Add or update each setting as a wordpress option
+        foreach($settings as $setting => $value){
+
+            if ( get_option( $setting ) !== false ) {
+                update_option( $setting, $value );
+            } else {
+                $deprecated = null;
+                $autoload = 'no';
+                add_option( $setting, $value, $deprecated, $autoload );
+            }
+        }
+        return true;
+
     }
 
     public function installation() {
@@ -96,97 +236,11 @@ class BuyMeABeerAdmin {
     }
     function adminMenu () {
         add_options_page( 'Buy Me A Beer','Buy Me A Beer','manage_options','buymeabeer', array( $this,
-            'wordpressSettingsPage'
+            'adminSettingsPage'
         ) );
     }
 
-    function  wordpressSettingsPage () {
+    function  adminSettingsPage () {
         require_once plugin_dir_path( __FILE__ ) . 'partials/settingsManager.php';
-    }
-
-    function getPQs() {
-        global $wpdb;
-        $table = $wpdb->prefix . PRICEQUANITY_TABLE;
-        $pqs = $wpdb->get_results("SELECT * FROM $table");
-        $json = json_encode($pqs);
-        return $json;
-    }
-
-    function getDescriptions() {
-        global $wpdb;
-        $table = $wpdb->prefix . DESCRIPTIONS_TABLE;
-        $descriptions = $wpdb->get_results("SELECT * FROM $table");
-        $json = json_encode($descriptions);
-        return $json;
-    }
-
-    function getDescription($id) {
-        global $wpdb;
-        $table = $wpdb->prefix . DESCRIPTIONS_TABLE;
-        $description = $wpdb->get_row("SELECT * FROM $table WHERE id=$id");
-        $json = json_encode($description);
-        return $json;
-    }
-
-    function updateSettings($paypalMode, $paypalClientId, $paypalSecret, $currency){
-
-        $settings = array(
-            "bmabPaypalMode" => $paypalMode,
-            "bmabPaypalClientId" => $paypalClientId,
-            "bmabPaypalSecret" => $paypalSecret,
-            "bmabCurrency" => $currency
-        );
-
-        //Add or update each setting as a wordpress option
-        foreach($settings as $setting => $value){
-
-            if ( get_option( $setting ) !== false ) {
-                update_option( $setting, $value );
-            } else {
-                $deprecated = null;
-                $autoload = 'no';
-                add_option( $setting, $value, $deprecated, $autoload );
-            }
-        }
-        return true;
-
-    }
-
-    function addPQ($name, $price) {
-
-        global $wpdb;
-
-        $table = $wpdb->prefix . PRICEQUANITY_TABLE;
-
-        $wpdb->insert($table,
-            array(
-                'name' => $name,
-                'price' => $price
-            ),
-            array(
-                '%s',
-                '%d'
-            )
-        );
-    }
-
-    function addDescription($title, $description, $image) {
-
-        global $wpdb;
-        $table = $wpdb->prefix . DESCRIPTIONS_TABLE;
-
-        $wpdb->insert(
-            $table,
-            array(
-                'title' => $title,
-                'description' => $description,
-                'image' => $image
-            ),
-            array(
-                '%s',
-                '%s',
-                '%s'
-            )
-        );
     }
 }
