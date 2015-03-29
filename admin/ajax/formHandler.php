@@ -10,24 +10,77 @@ $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : null;
 
 switch($action) {
     case "saveSettings":
-        $bmabAdmin->updateSettings($_REQUEST['paypalMode'], $_REQUEST['paypalClientId'],$_REQUEST['paypalSecret'],
-            $_REQUEST['currency']);
+        $paypalMode = isset($_REQUEST['paypalMode']) ? $_REQUEST['paypalMode'] : null;
+        $paypalClientId = isset($_REQUEST['paypalClientId']) ? $_REQUEST['paypalClientId'] : null;
+        $paypalSecret = isset($_REQUEST['paypalSecret']) ? $_REQUEST['paypalSecret'] : null;
+        $currency = isset($_REQUEST['currency']) ? $_REQUEST['currency'] : null;
+
+        $bmabAdmin->updateSettings($paypalMode, $paypalClientId, $paypalSecret, $currency);
+        $message = [ "message" => "Saved", "type" => "success"];
+        return json_encode($message);
         break;
 
     case "addDescription":
-        $bmabAdmin->addDescription($_REQUEST['title'], $_REQUEST['description'], $_REQUEST['image']);
+        $title = isset($_REQUEST['title']) ? $_REQUEST['title'] : null;
+        $description = isset($_REQUEST['description']) ? $_REQUEST['description'] : null;
+        $image = isset($_REQUEST['image']) ? $_REQUEST['image'] : null;
+
+        if($title == null || $description == null) {
+            $error = [ "message" => "Title and Description are required!", "type" => "error"];
+            return json_encode($error);
+        }
+        else {
+            $bmabAdmin->addDescription($title, $description, $image);
+            $message = [ "message" => "Created", "type" => "success"];
+            return json_encode($message);
+        }
         break;
 
     case "editDescription":
-            //Todo Sean : Handle edit descriptions sending
+        $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+        $title = isset($_REQUEST['title']) ? $_REQUEST['title'] : null;
+        $description = isset($_REQUEST['description']) ? $_REQUEST['description'] : null;
+        $image = isset($_REQUEST['image']) ? $_REQUEST['image'] : null;
+
+        if($id == null || $title == null || $description == null) {
+            $error = [ "message" => "Title and Description are required!", "type" => "error"];
+            return json_encode($error);
+        }
+        else {
+            $bmabAdmin->editDescription($title, $description, $image);
+            $message = [ "message" => "Saved", "type" => "success"];
+            return json_encode($message);
+        }
         break;
 
     case "addPQ":
-        $bmabAdmin->addPQ($_REQUEST['name'], $_REQUEST['price']);
+        $name = isset($_REQUEST['name']) ? $_REQUEST['name'] : null;
+        $price = isset($_REQUEST['price']) ? $_REQUEST['price'] : null;
+        if($name == null || $price == null) {
+            $error = [ "message" => "Name and Price are required!", "type" => "error"];
+            return json_encode($error);
+        }
+        else {
+            $bmabAdmin->addPQ($name, $price);
+            $message = [ "message" => "Created", "type" => "success"];
+            return json_encode($message);
+        }
         break;
 
     case "editPQ":
-        //Todo Sean : Handle edit pages sending
+        $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+        $name = isset($_REQUEST['name']) ? $_REQUEST['name'] : null;
+        $price = isset($_REQUEST['price']) ? $_REQUEST['price'] : null;
+
+        if($id == null || $name == null || $price == null) {
+            $error = [ "message" => "Name and Price are required!", "type" => "error"];
+            return json_encode($error);
+        }
+        else {
+            $bmabAdmin->editPQ($id, $name, $price);
+            $message = [ "message" => "Saved", "type" => "success"];
+            return json_encode($message);
+        }
         break;
 
     default:
