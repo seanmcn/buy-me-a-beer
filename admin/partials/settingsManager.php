@@ -5,7 +5,7 @@
         <li class="all"><a href="" id="bmabMain" class="current bmabPage">Main</span></a> |</li>
         <li class="active"><a href="" id="bmabPQ" class="bmabPage">Manage Prices &amp; Quantities</a>
             |</li>
-        <li class="inactive"><a href="" id="bmabDescrip" class="bmabPage">Manage Titles &
+        <li class="inactive"><a href="" id="bmabDescriptions" class="bmabPage">Manage Titles &
                 Descriptions</a>
             |</li>
         <li class="inactive"><a href="" id="bmabHelp" class="bmabPage">Help</a></li>
@@ -19,6 +19,16 @@
         </p>
         <table class="form-table">
             <tbody>
+            <tr>
+                <th scope="row">
+                    <label for="paypalClientId">Paypal Email:</label>
+                </th>
+                <td>
+                    <input name="paypalEmail" type="text" id="paypalEmail" value="<?php echo get_option(
+                        'bmabPaypalEmail', 'Paypal Email Here' );?>"
+                           class="regular-text">
+                </td>
+            </tr>
             <tr>
                 <th scope="row">
                     <label for="paypaplMode">Paypal Endpoint:</label>
@@ -116,7 +126,8 @@
             <button id="bmabAddPQ" class="button button-primary bmabPage">Add New</button>
         </p>
     </div>
-    <!-- Todo Sean: You were here, need to send this stuff to JS and then PHP -->
+
+    <!-- Add PQ -->
     <div class="bmabContent" id="bmabAddPQ">
         <table class="form-table">
             <tbody>
@@ -145,8 +156,39 @@
         </table>
     </div>
 
+    <!-- Edit PQ -->
+    <div class="bmabContent" id="bmabEditPQ">
+        <table class="form-table">
+            <tbody>
+            <tr>
+                <th scope="row">
+                    <label for="editPQName">Quantity Name:</label>
+                </th>
+                <td>
+                    <input type="text" id="editPQName">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="editPQPrice">Price:</label>
+                </th>
+                <td>
+                    <input type="text" id="editPQPrice">
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <input type="hidden" name="editPQId" id="editPQId" value="0"/>
+                    <button id="bmabPQ" class="bmabPage button button-secondary">Cancel</button> &nbsp;&nbsp;&nbsp;
+                    <button id="bmabEditPQ" class="bmabAction button button-primary">Save</button></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
     <!-- Descriptions -->
-    <div class="bmabContent" id="bmabDescrip">
+    <div class="bmabContent" id="bmabDescriptions">
         <div class="tablenav top">
 
             <div class="alignleft actions bulkactions">
@@ -220,14 +262,14 @@
                 <td>
                     <div>
                         <input type="text" name="descriptionImage" id="descriptionImage" class="regular-text">
-                        <input type="button" name="wordpressUploader"" id="wordpressUploader" class="button-secondary" value="Upload Image">
+                        <input type="button" name="wordpressUploader" id="wordpressUploader" class="button-secondary" value="Upload Image">
 
                     </div>
                 </td>
             </tr>
             <tr>
                 <td></td>
-                <td><button id="bmabDescrip" class="bmabPage button button-secondary">Cancel</button> &nbsp;&nbsp;&nbsp;
+                <td><button id="bmabDescriptions" class="bmabPage button button-secondary">Cancel</button> &nbsp;&nbsp;&nbsp;
                     <button id="bmabAddDescription" class="bmabAction button button-primary">Add</button></td>
             </tr>
             </tbody>
@@ -270,8 +312,8 @@
                 <td></td>
                 <td>
                     <input type="hidden" name="editDescriptionId" id="editDescriptionId" value="0">
-                    <button id="bmabDescrip" class="bmabPage button button-secondary">Cancel</button> &nbsp;&nbsp;&nbsp;
-                    <button id="bmabAddDescription" class="bmabAction button button-primary">Add</button></td>
+                    <button id="bmabDescriptions" class="bmabPage button button-secondary">Cancel</button> &nbsp;&nbsp;&nbsp;
+                    <button id="bmabEditDescription" class="bmabAction button button-primary">Save</button></td>
             </tr>
             </tbody>
         </table>

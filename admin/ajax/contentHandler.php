@@ -6,24 +6,35 @@ $bmab = new BuyMeABeer();
 $version = $bmab->getVersion();
 $bmabAdmin = new BuyMeABeerAdmin($version);
 
-$action = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+$action = isset($_REQUEST['action']) ? $_REQUEST['action'] : null;
 
 switch($action) {
+
     case "bmabPQ":
         echo $bmabAdmin->getPQs();
         break;
 
-    case "bmabDescrip":
+    case "bmabEditPQ":
+        $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+        if($id !== null) {
+            echo $bmabAdmin->getPQ($id);
+        }
+        break;
+
+    case "bmabDescriptions":
         echo $bmabAdmin->getDescriptions();
         break;
 
     case "bmabEditDescription":
-        $editId = isset($_REQUEST['editId']) ? $_REQUEST['editId'] : null;
-        echo $bmabAdmin->getDescription($editId);
+        $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+        if($id !== null) {
+            echo $bmabAdmin->getDescription($id);
+        }
         break;
 
     default :
         echo "Error: What are you up to?";
 
         break;
+
 }

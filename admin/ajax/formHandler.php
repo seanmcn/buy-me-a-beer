@@ -10,14 +10,15 @@ $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : null;
 
 switch($action) {
     case "saveSettings":
+        $paypalEmail = isset($_REQUEST['paypalEmail']) ? $_REQUEST['paypalEmail'] : null;
         $paypalMode = isset($_REQUEST['paypalMode']) ? $_REQUEST['paypalMode'] : null;
         $paypalClientId = isset($_REQUEST['paypalClientId']) ? $_REQUEST['paypalClientId'] : null;
         $paypalSecret = isset($_REQUEST['paypalSecret']) ? $_REQUEST['paypalSecret'] : null;
         $currency = isset($_REQUEST['currency']) ? $_REQUEST['currency'] : null;
 
-        $bmabAdmin->updateSettings($paypalMode, $paypalClientId, $paypalSecret, $currency);
-        $message = [ "message" => "Saved", "type" => "success"];
-        return json_encode($message);
+        $bmabAdmin->updateSettings($paypalEmail, $paypalMode, $paypalClientId, $paypalSecret, $currency);
+        $message = [ "message" => "Settings saved", "type" => "success"];
+        echo json_encode($message);
         break;
 
     case "addDescription":
@@ -27,12 +28,12 @@ switch($action) {
 
         if($title == null || $description == null) {
             $error = [ "message" => "Title and Description are required!", "type" => "error"];
-            return json_encode($error);
+            echo json_encode($error);
         }
         else {
             $bmabAdmin->addDescription($title, $description, $image);
-            $message = [ "message" => "Created", "type" => "success"];
-            return json_encode($message);
+            $message = [ "message" => "'Title / Description' created", "type" => "success"];
+            echo json_encode($message);
         }
         break;
 
@@ -44,12 +45,25 @@ switch($action) {
 
         if($id == null || $title == null || $description == null) {
             $error = [ "message" => "Title and Description are required!", "type" => "error"];
-            return json_encode($error);
+            echo json_encode($error);
         }
         else {
-            $bmabAdmin->editDescription($title, $description, $image);
-            $message = [ "message" => "Saved", "type" => "success"];
-            return json_encode($message);
+            $bmabAdmin->updateDescription($id, $title, $description, $image);
+            $message = [ "message" => "'Title / Description' saved!", "type" => "success"];
+            echo json_encode($message);
+        }
+        break;
+
+    case "deleteDescription":
+        $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+        if($id == null) {
+            $error = [ "message" => "Error", "type" => "error"];
+            echo json_encode($error);
+        }
+        else {
+            $bmabAdmin->deleteDescription($id);
+            $message = [ "message" => "'Title / Description' has been deleted!", "type" => "success"];
+            echo json_encode($message);
         }
         break;
 
@@ -58,12 +72,12 @@ switch($action) {
         $price = isset($_REQUEST['price']) ? $_REQUEST['price'] : null;
         if($name == null || $price == null) {
             $error = [ "message" => "Name and Price are required!", "type" => "error"];
-            return json_encode($error);
+            echo json_encode($error);
         }
         else {
             $bmabAdmin->addPQ($name, $price);
-            $message = [ "message" => "Created", "type" => "success"];
-            return json_encode($message);
+            $message = [ "message" => "'Quantity / Price' created", "type" => "success"];
+            echo json_encode($message);
         }
         break;
 
@@ -74,16 +88,30 @@ switch($action) {
 
         if($id == null || $name == null || $price == null) {
             $error = [ "message" => "Name and Price are required!", "type" => "error"];
-            return json_encode($error);
+            echo json_encode($error);
         }
         else {
-            $bmabAdmin->editPQ($id, $name, $price);
-            $message = [ "message" => "Saved", "type" => "success"];
-            return json_encode($message);
+            $bmabAdmin->updatePQ($id, $name, $price);
+            $message = [ "message" => "'Quantity / Price' saved", "type" => "success"];
+            echo json_encode($message);
+        }
+        break;
+
+    case "deletePQ":
+        $id = isset($_REQUEST['id']) ? $_REQUEST['id'] : null;
+        if($id == null) {
+            $error = [ "message" => "You didn't specify which 'Quantity / Price' to delete", "type" => "error"];
+            echo json_encode($error);
+        }
+        else {
+            $bmabAdmin->deletePQ($id);
+            $message = [ "message" => "'Quantity / Price' has been deleted!", "type" => "success"];
+            echo json_encode($message);
         }
         break;
 
     default:
-        echo "Error: What are you up to?";
+        $error = [ "message" => "Error", "type" => "error"];
+        echo json_encode($error);
         break;
 }

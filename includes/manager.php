@@ -30,11 +30,14 @@ class BuyMeABeer
         $this->loader->addAction('admin_menu', $admin, 'adminMenu');
         $this->loader->addAction('admin_enqueue_styles', $admin, 'adminEnqueueStyles');
         $this->loader->addAction('admin_enqueue_scripts', $admin, 'adminEnqueueScripts');
+        $this->loader->addAction('add_meta_boxes', $admin, 'addPostWidget' );
+        $this->loader->addAction('save_post', $admin, 'savePostWidget');
     }
 
     private function definePublicHooks()
     {
         $public = new BuyMeABeerPublic($this->getVersion());
+        $this->loader->addAction( 'the_content', $public, 'displayPostWidget' );
     }
 
     public function activatePlugin() {

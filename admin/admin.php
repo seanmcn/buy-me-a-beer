@@ -9,6 +9,13 @@ class BuyMeABeerAdmin {
         $this->version = $version;
     }
 
+    function getTitlesAndDescriptions() {
+        global $wpdb;
+        $table = $wpdb->prefix . DESCRIPTIONS_TABLE;
+        $titlesAndDescriptions = $wpdb->get_results("SELECT * FROM $table");
+        return $titlesAndDescriptions;
+    }
+
     function getDescription($id) {
         global $wpdb;
         $table = $wpdb->prefix . DESCRIPTIONS_TABLE;
@@ -68,7 +75,7 @@ class BuyMeABeerAdmin {
         return true;
     }
 
-    function removeDescription($id) {
+    function deleteDescription($id) {
         global $wpdb;
         $table = $wpdb->prefix . DESCRIPTIONS_TABLE;
         $wpdb->delete( $table, array( 'id' => $id ), array( '%d' ) );
@@ -130,19 +137,20 @@ class BuyMeABeerAdmin {
         return true;
     }
 
-    function removePQ($id) {
+    function deletePQ($id) {
         global $wpdb;
         $table = $wpdb->prefix . PRICEQUANITY_TABLE;
         $wpdb->delete( $table, array( 'id' => $id ), array( '%d' ) );
         return true;
     }
 
-    function updateSettings($paypalMode, $paypalClientId, $paypalSecret, $currency){
+    function updateSettings($paypalEmail, $paypalMode, $paypalClientId, $paypalSecret, $currency){
         $settings = array(
-            "bmabPaypalMode" => $paypalMode,
-            "bmabPaypalClientId" => $paypalClientId,
-            "bmabPaypalSecret" => $paypalSecret,
-            "bmabCurrency" => $currency
+            'bmabPaypalEmail' => $paypalEmail,
+            'bmabPaypalMode' => $paypalMode,
+            'bmabPaypalClientId' => $paypalClientId,
+            'bmabPaypalSecret' => $paypalSecret,
+            'bmabCurrency' => $currency
         );
 
         //Add or update each setting as a wordpress option
@@ -242,5 +250,28 @@ class BuyMeABeerAdmin {
 
     function  adminSettingsPage () {
         require_once plugin_dir_path( __FILE__ ) . 'partials/settingsManager.php';
+    }
+
+    public function addPostWidget() {
+
+        add_meta_box(
+            'buy-me-a-beer-option',
+            'Buy Me A Beer Options',
+            array( $this, 'renderPostWidget' ),
+            'post',
+            'normal',
+            'core'
+        );
+
+    }
+
+    public function renderPostWidget() {
+        $titlesAndDescriptions = $this->getTitlesAndDescriptions();
+        require_once plugin_dir_path( __FILE__ ) . 'partials/postManager.php';
+    }
+
+    public function savePostWidget($postId) {
+        global $wpdb;
+        var_dump($postId);
     }
 }

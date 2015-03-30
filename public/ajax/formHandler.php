@@ -1,6 +1,6 @@
 <?php
 require_once( "../../../../../wp-load.php" );
-require_once(ABSPATH. "wp-content/plugins/buyMeABeer/public/paypal.php");
+require_once(ABSPATH. "wp-content/plugins/buymeabeer/public/paypal.php");
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $descriptionId = $_REQUEST['bmabDescriptionId'];
