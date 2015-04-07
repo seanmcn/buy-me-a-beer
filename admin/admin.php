@@ -153,7 +153,7 @@ class BuyMeABeerAdmin {
             'bmabCurrency' => $currency
         );
 
-        //Add or update each setting as a wordpress option
+        // Add / Update each setting as a wordpress option
         foreach($settings as $setting => $value){
 
             if ( get_option( $setting ) !== false ) {
@@ -192,6 +192,7 @@ class BuyMeABeerAdmin {
 		title varchar(300),
 		description text,
 		image varchar(300),
+		default_option int(1) DEFAULT 0 NOT NULL,
 		UNIQUE KEY id (id)
 	) $charset_collate;";
 
@@ -231,8 +232,7 @@ class BuyMeABeerAdmin {
         ('jquery','media-upload','thickbox'));
         wp_enqueue_script('bmabImageUploaderJs');
 
-        wp_register_script('bmabAdminJs',WP_PLUGIN_URL.'/buymeabeer/admin/js/main.js', array
-        ('jquery'));
+        wp_register_script('bmabAdminJs',WP_PLUGIN_URL.'/buymeabeer/admin/js/main.js', array('jquery'));
         wp_enqueue_script('bmabAdminJs');
 
         /* Admin CSS needs to be loaded here */
@@ -271,7 +271,7 @@ class BuyMeABeerAdmin {
     }
 
     public function savePostWidget($postId) {
-        global $wpdb;
-        var_dump($postId);
+        $option = $_REQUEST['bmabTitleDescripID'];
+        update_post_meta($postId, 'bmabDescriptionId', $option);
     }
 }

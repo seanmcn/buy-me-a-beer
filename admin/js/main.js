@@ -132,7 +132,10 @@ function bmabContentHandler(action, content) {
                                 '<a href="" class="bmabDeleteDescription" id="'+value.id+'">Delete</a> |' +
                                 '</span>' +
                                 '<span class="edit" >' +
-                                '<a href="" class="bmabEditDescription" id="'+value.id+'">Edit</a>' +
+                                '<a href="" class="bmabEditDescription" id="'+value.id+'">Edit</a> |' +
+                                '</span>' +
+                                '<span class="default" >' +
+                                '<a href="" class="bmabDefaultDescription" id="'+value.id+'">Default</a>' +
                                 '</span>' +
                             '</div>' +
                             '</td>' +
