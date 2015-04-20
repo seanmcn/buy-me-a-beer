@@ -8,6 +8,12 @@ class BuyMeABeerPublic {
     }
 
     public function displayPostWidget( $content ) {
+        wp_register_script( 'bmabJs', WP_PLUGIN_URL . '/buymeabeer/public/js/main.js', array( 'jquery' ) );
+        wp_enqueue_script( 'bmabJs' );
+
+        wp_register_style( 'bmabCss', WP_PLUGIN_URL . '/buymeabeer/public/css/main.css' );
+        wp_enqueue_style( 'bmabCss' );
+
         $postId = get_the_ID();
         $descriptionId =  get_post_meta($postId, 'bmabDescriptionId', true);
         if($descriptionId) {

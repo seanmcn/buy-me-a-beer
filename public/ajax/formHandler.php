@@ -3,15 +3,21 @@ require_once( "../../../../../wp-load.php" );
 require_once(ABSPATH. "wp-content/plugins/buymeabeer/public/paypal.php");
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $descriptionId = $_REQUEST['bmabDescriptionId'];
-    $selectedPQ = $_REQUEST['bmabPQId'];
+    $descriptionId = isset($_REQUEST['bmabDescriptionId']) ? (int) $_REQUEST['bmabDescriptionId'] : null;
+    $selectedOption = isset($_REQUEST['bmabOption']) ? (int) $_REQUEST['bmabOption'] : null;
     //open connection
     try{
-        $paypal = new BuyMeABeerPaypal();
-        $token = $paypal->createPayment($descriptionId, $selectedPQ);
+        if($descriptionId !== null && $selectedOption !== null) {
+            $paypal = new BuyMeABeerPaypal();
+            $paypal->createPayment($descriptionId, $selectedOption);
+        }
+        else {
+            error_log("Error: The 'Buy Me A Beer' wp plugin failed to receive a selected option ID and/or description ID");
+            wp_redirect("/");
+        }
     }
     catch(Exception $e){
-        error_log("The 'Buy Me A Beer' Wordpress plugin has encountered an exception while creating a payment with Paypal: ");
+        error_log("Error: The 'Buy Me A Beer' wp plugin has encountered an exception while creating a payment with Paypal: ");
         error_log($e);
     }
 }

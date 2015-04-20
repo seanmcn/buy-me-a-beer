@@ -1,56 +1,27 @@
 <?php
 require_once(ABSPATH. "wp-content/plugins/buymeabeer/admin/config.php");
 class BuyMeABeerPaypal {
+
     public function __construct() {
-        // Todo Sean: These settings need to be filled in automatically.
-        $this->paypalAccount = '';
-        $this->paypalApi= 'api.sandbox.paypal.com'; // https://api.paypal.com
-        $this->paypalClientId = '';
-        $this->paypalSecret = '';
+        $paypalMode = get_option('bmabPaypalMode', 'sandbox' );
+        $this->paypalApi =  $paypalMode === 'live' ? "api.paypal.com" : "api.sandbox.paypal.com";
+        $this->paypalAccount = get_option('bmabPaypalEmail', null );
+        $this->paypalClientId = get_option('bmabPaypalClientId', null );
+        $this->paypalSecret = get_option('bmabPaypalSecret', null );
+	    $this->bmabCurrency = get_option('bmabCurrency', 'USD');
         $this->paypalConsentEndpoint = "/webapps/auth/protocol/openidconnect/v1/authorize";
     }
 
-    public function curlPost($headers, $auth = null, $endPoint, $postFields) {
-        $curl = curl_init();
-        $curlOptions = array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => 'https://'.$this->paypalApi.$endPoint,
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_POST => 1,
-            CURLOPT_POSTFIELDS => $postFields,
-            CURLOPT_SSL_VERIFYPEER => false //Todo Sean: Remove this hack.
-        );
-        if($auth) {
-            $curlOptions[CURLOPT_USERPWD] = $auth;
-        }
-        curl_setopt_array($curl, $curlOptions);
-        $result = curl_exec($curl);
-        if (curl_errno($curl)) {
-            error_log('Error: ' . curl_error($curl));
-            return false;
-        }
-        curl_close($curl);
-        return json_decode($result, TRUE);
-    }
-
-    public function getToken() {
-        $curlHeaders = array(
-            'Accept: application/json',
-            'Content-Type: x-www-form-urlencoded'
-        );
-        $curlAuth = $this->paypalClientId.':'.$this->paypalSecret;
-        $curlResult = $this->curlPost($curlHeaders, $curlAuth, '/v1/oauth2/token', 'grant_type=client_credentials');
-        if($curlResult) {
-            $accessToken = $curlResult['access_token'];
-        }
-        else {
-            error_log('Buy Me A Beer: Failed to get Paypal oAuth token');
-            wp_redirect( home_url() ); exit;
-        }
-        return $accessToken;
-    }
-
     public function createPayment($descriptionId, $selectedPQ) {
+	    global $wpdb;
+
+	    $pqTable       = $wpdb->prefix . PRICEQUANITY_TABLE;
+	    $pq = $wpdb->get_row( "SELECT * FROM $pqTable WHERE id=$selectedPQ" );
+
+	    $blogName = get_bloginfo('name');
+	    $priceName = $pq->name;
+	    $price = $pq->price;
+
         $accessToken = $this->getToken();
         $curlHeaders = array(
             'Content-Type: application/json',
@@ -61,14 +32,14 @@ class BuyMeABeerPaypal {
         $paymentObject['payer']['payment_method'] = 'paypal';
         $paymentObject['transactions'][] = array(
           'amount' => array(
-              'total' => '10.22',
+              'total' =>  $price,
               'currency' => 'USD',
               'details' => array(
-                  'subtotal' => '10.22',
+                  'subtotal' => $price,
                   'tax' =>  '0.00',
                   'shipping' => '0.00',
                 )),
-          'description' => 'Buying a beer for me!'
+          'description' => "$priceName for $blogName"
         );
         $paymentObject['redirect_urls'] = array(
             'return_url' =>  plugins_url().'/buymeabeer/public/ajax/paypalReturn.php',
@@ -134,4 +105,42 @@ class BuyMeABeerPaypal {
         );
         return;
     }
+	public function getToken() {
+		$curlHeaders = array(
+			'Accept: application/json',
+			'Content-Type: x-www-form-urlencoded'
+		);
+		$curlAuth = $this->paypalClientId.':'.$this->paypalSecret;
+		$curlResult = $this->curlPost($curlHeaders, $curlAuth, '/v1/oauth2/token', 'grant_type=client_credentials');
+		if($curlResult) {
+			$accessToken = $curlResult['access_token'];
+		}
+		else {
+			error_log('Buy Me A Beer: Failed to get Paypal oAuth token');
+			wp_redirect( home_url() ); exit;
+		}
+		return $accessToken;
+	}
+	public function curlPost($headers, $auth = null, $endPoint, $postFields) {
+		$curl = curl_init();
+		$curlOptions = array(
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_URL => 'https://'.$this->paypalApi.$endPoint,
+			CURLOPT_HTTPHEADER => $headers,
+			CURLOPT_POST => 1,
+			CURLOPT_POSTFIELDS => $postFields,
+			CURLOPT_SSL_VERIFYPEER => false //Todo Sean: Remove this hack.
+		);
+		if($auth) {
+			$curlOptions[CURLOPT_USERPWD] = $auth;
+		}
+		curl_setopt_array($curl, $curlOptions);
+		$result = curl_exec($curl);
+		if (curl_errno($curl)) {
+			error_log('Error: ' . curl_error($curl));
+			return false;
+		}
+		curl_close($curl);
+		return json_decode($result, TRUE);
+	}
 }
