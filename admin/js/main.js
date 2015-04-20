@@ -1,9 +1,5 @@
 jQuery.noConflict();
-function tip() {}
 jQuery(document).ready(function ($) {
-
-    bmabInit(); //Todo Sean: Remove this because it loads on admin post page
-
     $('body').on("click", ".bmabPage", function(e) {
         e.preventDefault();
         var id = $(this).attr("id");
@@ -172,7 +168,7 @@ function bmabSaveSettings() {
     var paypalMode = jQuery('#paypalMode').val();
     var paypalClientId = jQuery('#paypalClientId').val();
     var paypalSecret = jQuery('#paypalSecret').val();
-    var currency = jQuery('#bmabCurrency').val();
+    var currency = jQuery('#bmabCurrency').find('option:selected').attr('id');;
 
     jQuery.post( '/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', { action: "saveSettings", paypalEmail: paypalEmail, paypalMode : paypalMode, paypalClientId : paypalClientId, paypalSecret : paypalSecret, currency: currency }, function( data ) {
             bmabAlertMessage(data.message, data.type);
