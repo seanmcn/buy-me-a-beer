@@ -1,4 +1,9 @@
-<div class="wrap">
+<script type="text/javascript">
+    jQuery.noConflict();
+    jQuery(document).ready(function ($) {
+        bmabInit();
+    });
+</script><div class="wrap">
     <h2>Buy Me A Beer Settings</h2>
 
     <ul class="subsubsub">
@@ -70,7 +75,33 @@
                     <label for="bmabCurrency">Currency:</label>
                 </th>
                 <td>
-                    <input name="bmabCurrency" type="text" id="bmabCurrency" value=""  class="regular-text">
+                    <?php
+                    $currencies = array(
+                        "AUD" => "Australian dollar",
+                        "CAD" => "Canadian dollar",
+                        "EUR" => "Euro",
+                        "HKD" => "Hong Kong dollar",
+                        "NZD" => "New Zealand dollar",
+                        "NOK" => "Norwegian kroner",
+                        "GBP" => "Pound sterling",
+                        "SEK" => "Swedish krona",
+                        "CHF" => "Swiss franc",
+                        "USD" => "United States dollar"
+                    );
+                    $bmabCurrency = get_option('bmabCurrency', 'USD');
+                    ?>
+                    <select name="bmabCurrency" id="bmabCurrency">
+                        <?php foreach($currencies as $key => $currency) {
+                            if($key == $bmabCurrency) {
+                                echo "<option id='$key' selected>$currency</option>";
+                            }
+                            else {
+                                echo "<option id='$key'>$currency</option>";
+                            }
+
+                        }
+                        ?>
+                    </select>
                 </td>
             </tr>
             </tbody>
