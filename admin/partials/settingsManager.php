@@ -3,34 +3,63 @@
     jQuery(document).ready(function ($) {
         bmabInit();
     });
-</script><div class="wrap">
+</script>
+
+<div class="bmabWrap">
     <h2>Buy Me A Beer Settings</h2>
 
     <ul class="subsubsub">
         <li class="all"><a href="" id="bmabMain" class="current bmabPage">Main</span></a> |</li>
         <li class="active"><a href="" id="bmabPQ" class="bmabPage">Manage Prices &amp; Quantities</a>
-            |</li>
+            |
+        </li>
         <li class="inactive"><a href="" id="bmabDescriptions" class="bmabPage">Manage Titles &
                 Descriptions</a>
-            |</li>
+            |
+        </li>
         <li class="inactive"><a href="" id="bmabHelp" class="bmabPage">Help</a></li>
     </ul>
+
+    <div id="alertArea"></div>
 
     <!-- Main -->
     <div class="bmabContent" id="bmabMain">
         <p>
-           <strong>Where do I get my Paypal ID?</strong> <br />
-           You can get a Paypal REST ID by <a href="https://developer.paypal.com/webapps/developer/applications/" target="_blank"> clicking here </a> and pressing the blue "Create App" button
+            <strong>Where do I get my Paypal ID?</strong> <br/>
+            You can get a Paypal REST ID by <a href="https://developer.paypal.com/webapps/developer/applications/" target="_blank"> clicking here </a>
+            and pressing the blue "Create App" button
         </p>
         <table class="form-table">
             <tbody>
+            <tr>
+                <th scope="row">
+                    <label for="paypalClientId">Display Mode:</label>
+                </th>
+                <td>
+                    <?php
+                    $displayMode = get_option( 'bmabDisplayMode', 'automatic' );
+                    ?>
+                    <select name="bmabDisplayMode" id="bmabDisplayMode">
+                        <option id="automatic" value="automatic" <?php if ($displayMode == 'automatic') {
+                            echo "selected";
+                        }
+                        ?>>Automatic (Display on all posts)
+                        </option>
+                        <option id="manual" value="manual" <?php if ($displayMode == 'manual') {
+                            echo "selected";
+                        }
+                        ?>>Manual ( Manually choose which posts to display on)
+                        </option>
+                    </select>
+                </td>
+            </tr>
             <tr>
                 <th scope="row">
                     <label for="paypalClientId">Paypal Email:</label>
                 </th>
                 <td>
                     <input name="paypalEmail" type="text" id="paypalEmail" value="<?php echo get_option(
-                        'bmabPaypalEmail', 'Paypal Email Here' );?>"
+                        'bmabPaypalEmail', 'Paypal Email Here' ); ?>"
                            class="regular-text">
                 </td>
             </tr>
@@ -40,13 +69,19 @@
                 </th>
                 <td>
                     <?php
-                        $paypalMode = get_option('bmabPaypalMode', 'sandbox' );
+                    $paypalMode = get_option( 'bmabPaypalMode', 'sandbox' );
                     ?>
                     <select name="paypalMode" id="paypalMode">
-                        <option id="sandbox" value="sandbox" <?php if ($paypalMode == 'sandbox') { echo "selected"; }
-                        ?>>Sandbox</option>
-                        <option id="live" value="live" <?php if ($paypalMode == 'live') { echo "selected"; }
-                        ?>>Live</option>
+                        <option id="sandbox" value="sandbox" <?php if ($paypalMode == 'sandbox') {
+                            echo "selected";
+                        }
+                        ?>>Sandbox
+                        </option>
+                        <option id="live" value="live" <?php if ($paypalMode == 'live') {
+                            echo "selected";
+                        }
+                        ?>>Live
+                        </option>
                     </select>
                 </td>
             </tr>
@@ -56,8 +91,8 @@
                 </th>
                 <td>
                     <input name="paypalClientId" type="text" id="paypalClientId" value="<?php echo get_option(
-    'bmabPaypalClientId', 'Paypal Client ID Here' );?>"
-                    class="regular-text">
+                        'bmabPaypalClientId', 'Paypal Client ID Here' ); ?>"
+                           class="regular-text">
                 </td>
             </tr>
             <tr>
@@ -66,7 +101,7 @@
                 </th>
                 <td>
                     <input name="paypalSecret" type="text" id="paypalSecret" value="<?php echo get_option(
-                        'bmabPaypalSecret', 'Paypal Secret Here' );?>"
+                        'bmabPaypalSecret', 'Paypal Secret Here' ); ?>"
                            class="regular-text">
                 </td>
             </tr>
@@ -76,7 +111,7 @@
                 </th>
                 <td>
                     <?php
-                    $currencies = array(
+                    $currencies   = array(
                         "AUD" => "Australian dollar",
                         "CAD" => "Canadian dollar",
                         "EUR" => "Euro",
@@ -88,14 +123,13 @@
                         "CHF" => "Swiss franc",
                         "USD" => "United States dollar"
                     );
-                    $bmabCurrency = get_option('bmabCurrency', 'USD');
+                    $bmabCurrency = get_option( 'bmabCurrency', 'USD' );
                     ?>
                     <select name="bmabCurrency" id="bmabCurrency">
-                        <?php foreach($currencies as $key => $currency) {
-                            if($key == $bmabCurrency) {
+                        <?php foreach ($currencies as $key => $currency) {
+                            if ($key == $bmabCurrency) {
                                 echo "<option id='$key' selected>$currency</option>";
-                            }
-                            else {
+                            } else {
                                 echo "<option id='$key'>$currency</option>";
                             }
 
@@ -116,7 +150,8 @@
         <div class="tablenav top">
 
             <div class="alignleft actions bulkactions">
-                <label for="bulk-action-selector-top" class="screen-reader-text">Select bulk action</label><select name="action" id="bulk-action-selector-top">
+                <label for="bulk-action-selector-top" class="screen-reader-text">Select bulk action</label><select name="action"
+                                                                                                                   id="bulk-action-selector-top">
                     <option value="-1" selected="selected">Bulk Actions</option>
                     <option value="delete-selected">Delete</option>
                 </select>
@@ -180,8 +215,11 @@
             </tr>
             <tr>
                 <td></td>
-                <td><button id="bmabPQ" class="bmabPage button button-secondary">Cancel</button> &nbsp;&nbsp;&nbsp;
-                    <button id="bmabAddPQ" class="bmabAction button button-primary">Add</button></td>
+                <td>
+                    <button id="bmabPQ" class="bmabPage button button-secondary">Cancel</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button id="bmabAddPQ" class="bmabAction button button-primary">Add</button>
+                </td>
             </tr>
             </tbody>
         </table>
@@ -211,8 +249,10 @@
                 <td></td>
                 <td>
                     <input type="hidden" name="editPQId" id="editPQId" value="0"/>
-                    <button id="bmabPQ" class="bmabPage button button-secondary">Cancel</button> &nbsp;&nbsp;&nbsp;
-                    <button id="bmabEditPQ" class="bmabAction button button-primary">Save</button></td>
+                    <button id="bmabPQ" class="bmabPage button button-secondary">Cancel</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button id="bmabEditPQ" class="bmabAction button button-primary">Save</button>
+                </td>
             </tr>
             </tbody>
         </table>
@@ -223,7 +263,8 @@
         <div class="tablenav top">
 
             <div class="alignleft actions bulkactions">
-                <label for="bulk-action-selector-top" class="screen-reader-text">Select bulk action</label><select name="action" id="bulk-action-selector-top">
+                <label for="bulk-action-selector-top" class="screen-reader-text">Select bulk action</label><select name="action"
+                                                                                                                   id="bulk-action-selector-top">
                     <option value="-1" selected="selected">Bulk Actions</option>
                     <option value="delete-selected">Delete</option>
                 </select>
@@ -278,7 +319,7 @@
                     <input type="text" id="newDescriptionTitle">
                 </td>
             </tr>
-            <tr>/
+            <tr>
                 <th scope="row">
                     <label for="newDescriptionDescription">Description:</label>
                 </th>
@@ -300,8 +341,11 @@
             </tr>
             <tr>
                 <td></td>
-                <td><button id="bmabDescriptions" class="bmabPage button button-secondary">Cancel</button> &nbsp;&nbsp;&nbsp;
-                    <button id="bmabAddDescription" class="bmabAction button button-primary">Add</button></td>
+                <td>
+                    <button id="bmabDescriptions" class="bmabPage button button-secondary">Cancel</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button id="bmabAddDescription" class="bmabAction button button-primary">Add</button>
+                </td>
             </tr>
             </tbody>
         </table>
@@ -343,8 +387,10 @@
                 <td></td>
                 <td>
                     <input type="hidden" name="editDescriptionId" id="editDescriptionId" value="0">
-                    <button id="bmabDescriptions" class="bmabPage button button-secondary">Cancel</button> &nbsp;&nbsp;&nbsp;
-                    <button id="bmabEditDescription" class="bmabAction button button-primary">Save</button></td>
+                    <button id="bmabDescriptions" class="bmabPage button button-secondary">Cancel</button>
+                    &nbsp;&nbsp;&nbsp;
+                    <button id="bmabEditDescription" class="bmabAction button button-primary">Save</button>
+                </td>
             </tr>
             </tbody>
         </table>

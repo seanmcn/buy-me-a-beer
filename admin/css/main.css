@@ -1,14 +1,27 @@
-h3{
+h3 {
     clear: both;
     padding-top: 10px;
 }
+
 .bmabContent {
     display: none;
     position: relative;
-    clear:both;
+    clear: both;
     width: 100%;
-    top: 35px;
+    top: 0px;
 }
+
 .tablenav {
     margin: 6px 0 12px;
+}
+
+#alertArea {
+    display: inline-block;
+    width: 99%;
+}
+
+.currentDefault {
+    /*font-weight: bold;*/
+    font-style: italic;
+    color: #000;
 }

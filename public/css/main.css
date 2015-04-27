@@ -2,16 +2,19 @@
     position: relative;
     width: 100%;
 }
+
 .bmabImage {
     position: relative;
     width: 30%;
     float: left;
 }
+
 .bmabContent {
     position: relative;
     width: 70%;
     float: left;
 }
+
 #bmabDescription {
     padding: 1em 0em;
 }

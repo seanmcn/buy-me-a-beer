@@ -1,206 +1,267 @@
 <?php
 require_once( ABSPATH . "wp-content/plugins/buymeabeer/admin/config.php" );
 
-class BuyMeABeerAdmin {
+class BuyMeABeerAdmin
+{
 
-	private $version;
+    private $version;
 
-	public function __construct( $version ) {
-		$this->version = $version;
-	}
+    public function __construct( $version )
+    {
+        $this->version = $version;
+    }
 
-	function getTitlesAndDescriptions() {
-		global $wpdb;
-		$table                 = $wpdb->prefix . DESCRIPTIONS_TABLE;
-		$titlesAndDescriptions = $wpdb->get_results( "SELECT * FROM $table" );
+    function getTitlesAndDescriptions()
+    {
+        global $wpdb;
+        $table                 = $wpdb->prefix . DESCRIPTIONS_TABLE;
+        $titlesAndDescriptions = $wpdb->get_results( "SELECT * FROM $table" );
 
-		return $titlesAndDescriptions;
-	}
+        return $titlesAndDescriptions;
+    }
 
-	function getDescription( $id ) {
-		global $wpdb;
-		$table       = $wpdb->prefix . DESCRIPTIONS_TABLE;
-		$description = $wpdb->get_row( "SELECT * FROM $table WHERE id=$id" );
-		$json        = json_encode( $description );
+    function getDescription( $id )
+    {
+        global $wpdb;
+        $table       = $wpdb->prefix . DESCRIPTIONS_TABLE;
+        $description = $wpdb->get_row( "SELECT * FROM $table WHERE id=$id" );
+        $json        = json_encode( $description );
 
-		return $json;
-	}
+        return $json;
+    }
 
-	function getDescriptions() {
-		global $wpdb;
-		$table        = $wpdb->prefix . DESCRIPTIONS_TABLE;
-		$descriptions = $wpdb->get_results( "SELECT * FROM $table" );
-		$json         = json_encode( $descriptions );
+    function getDescriptions()
+    {
+        global $wpdb;
+        $table        = $wpdb->prefix . DESCRIPTIONS_TABLE;
+        $descriptions = $wpdb->get_results( "SELECT * FROM $table" );
+        $json         = json_encode( $descriptions );
 
-		return $json;
-	}
+        return $json;
+    }
 
-	function addDescription( $title, $description, $image ) {
-		global $wpdb;
-		$table = $wpdb->prefix . DESCRIPTIONS_TABLE;
+    function addDescription( $title, $description, $image )
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . DESCRIPTIONS_TABLE;
 
-		$wpdb->insert(
-			$table,
-			array(
-				'title'       => $title,
-				'description' => $description,
-				'image'       => $image
-			),
-			array(
-				'%s',
-				'%s',
-				'%s'
-			)
-		);
+        $wpdb->insert(
+            $table,
+            array(
+                'title'       => $title,
+                'description' => $description,
+                'image'       => $image
+            ),
+            array(
+                '%s',
+                '%s',
+                '%s'
+            )
+        );
 
-		return true;
-	}
+        // Check to see if there is a default already and if not make this one the default
+        $wpdb->query( "SELECT * FROM $table WHERE default_option='1'" );
+        if ($wpdb->num_rows == 0) {
+            $id = $wpdb->insert_id;
+            $this->makeDefaultPQ( $id );
+        }
 
-	function updateDescription( $id, $title, $description, $image ) {
-		global $wpdb;
-		$table = $wpdb->prefix . DESCRIPTIONS_TABLE;
+        return true;
+    }
 
-		$wpdb->update( $table,
-			array(
-				'title'       => $title,
-				'description' => $description,
-				'image'       => $image
-			),
-			array(
-				'id' => $id
-			),
-			array(
-				'%s',
-				'%s',
-				'%s'
-			),
-			array( '%d' )
-		);
+    function makeDefaultPQ( $id )
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . DESCRIPTIONS_TABLE;
 
-		return true;
-	}
+        //Check if there is a default and remove it first
+        $currentDefault = $wpdb->query( "SELECT * FROM $table WHERE default_option='1'" );
+        if ($wpdb->num_rows != 0) {
+            $currentDefaultId = $currentDefault['id'];
+            $wpdb->update( $table,
+                array(
+                    'default_option' => 0,
+                ),
+                array(
+                    'id' => $currentDefaultId
+                ),
+                array(
+                    '%d',
+                ),
+                array( '%d' )
+            );
+        }
+        // Update the new default
+        $wpdb->update( $table,
+            array(
+                'default_option' => 1,
+            ),
+            array(
+                'id' => $id
+            ),
+            array(
+                '%d',
+            ),
+            array( '%d' )
+        );
 
-	function deleteDescription( $id ) {
-		global $wpdb;
-		$table = $wpdb->prefix . DESCRIPTIONS_TABLE;
-		$wpdb->delete( $table, array( 'id' => $id ), array( '%d' ) );
+    }
 
-		return true;
-	}
+    function updateDescription( $id, $title, $description, $image )
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . DESCRIPTIONS_TABLE;
 
-	function getPQ( $id ) {
-		global $wpdb;
-		$table       = $wpdb->prefix . PRICEQUANITY_TABLE;
-		$description = $wpdb->get_row( "SELECT * FROM $table WHERE id=$id" );
-		$json        = json_encode( $description );
+        $wpdb->update( $table,
+            array(
+                'title'       => $title,
+                'description' => $description,
+                'image'       => $image
+            ),
+            array(
+                'id' => $id
+            ),
+            array(
+                '%s',
+                '%s',
+                '%s'
+            ),
+            array( '%d' )
+        );
 
-		return $json;
-	}
+        return true;
+    }
 
-	function getPQs() {
-		global $wpdb;
-		$table = $wpdb->prefix . PRICEQUANITY_TABLE;
-		$pqs   = $wpdb->get_results( "SELECT * FROM $table" );
-		$json  = json_encode( $pqs );
+    function deleteDescription( $id )
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . DESCRIPTIONS_TABLE;
+        $wpdb->delete( $table, array( 'id' => $id ), array( '%d' ) );
 
-		return $json;
-	}
+        return true;
+    }
 
-	function addPQ( $name, $price ) {
-		global $wpdb;
-		$table = $wpdb->prefix . PRICEQUANITY_TABLE;
+    function getPQ( $id )
+    {
+        global $wpdb;
+        $table       = $wpdb->prefix . PRICEQUANITY_TABLE;
+        $description = $wpdb->get_row( "SELECT * FROM $table WHERE id=$id" );
+        $json        = json_encode( $description );
 
-		$wpdb->insert( $table,
-			array(
-				'name'  => $name,
-				'price' => $price
-			),
-			array(
-				'%s',
-				'%d'
-			)
-		);
+        return $json;
+    }
 
-		return true;
-	}
+    function getPQs()
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . PRICEQUANITY_TABLE;
+        $pqs   = $wpdb->get_results( "SELECT * FROM $table" );
+        $json  = json_encode( $pqs );
 
-	function updatePQ( $id, $name, $price ) {
-		global $wpdb;
-		$table = $wpdb->prefix . PRICEQUANITY_TABLE;
+        return $json;
+    }
 
-		$wpdb->update( $table,
-			array(
-				'name'  => $name,
-				'price' => $price
-			),
-			array(
-				'id' => $id
-			),
-			array(
-				'%s',
-				'%d'
-			),
-			array(
-				'%d'
-			)
-		);
+    function addPQ( $name, $price )
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . PRICEQUANITY_TABLE;
 
-		return true;
-	}
+        $wpdb->insert( $table,
+            array(
+                'name'  => $name,
+                'price' => $price
+            ),
+            array(
+                '%s',
+                '%d'
+            )
+        );
 
-	function deletePQ( $id ) {
-		global $wpdb;
-		$table = $wpdb->prefix . PRICEQUANITY_TABLE;
-		$wpdb->delete( $table, array( 'id' => $id ), array( '%d' ) );
+        return true;
+    }
 
-		return true;
-	}
+    function updatePQ( $id, $name, $price )
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . PRICEQUANITY_TABLE;
 
-	function updateSettings( $paypalEmail, $paypalMode, $paypalClientId, $paypalSecret, $currency ) {
-		$settings = array(
-			'bmabPaypalEmail'    => $paypalEmail,
-			'bmabPaypalMode'     => $paypalMode,
-			'bmabPaypalClientId' => $paypalClientId,
-			'bmabPaypalSecret'   => $paypalSecret,
-			'bmabCurrency'       => $currency
-		);
+        $wpdb->update( $table,
+            array(
+                'name'  => $name,
+                'price' => $price
+            ),
+            array(
+                'id' => $id
+            ),
+            array(
+                '%s',
+                '%d'
+            ),
+            array(
+                '%d'
+            )
+        );
 
-		// Add / Update each setting as a wordpress option
-		foreach ( $settings as $setting => $value ) {
+        return true;
+    }
 
-			if ( get_option( $setting ) !== false ) {
-				update_option( $setting, $value );
-			} else {
-				$deprecated = null;
-				$autoload   = 'no';
-				add_option( $setting, $value, $deprecated, $autoload );
-			}
-		}
+    function deletePQ( $id )
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . PRICEQUANITY_TABLE;
+        $wpdb->delete( $table, array( 'id' => $id ), array( '%d' ) );
 
-		return true;
+        return true;
+    }
 
-	}
+    function updateSettings( $paypalEmail, $paypalMode, $paypalClientId, $paypalSecret, $currency, $displayMode )
+    {
+        $settings = array(
+            'bmabPaypalEmail'    => $paypalEmail,
+            'bmabPaypalMode'     => $paypalMode,
+            'bmabPaypalClientId' => $paypalClientId,
+            'bmabPaypalSecret'   => $paypalSecret,
+            'bmabCurrency'       => $currency,
+            'bmabDisplayMode'    => $displayMode
+        );
 
-	public function installation() {
-		global $wpdb;
-		global $dbVersion;
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-		$paymentsTable      = $wpdb->prefix . PAYMENTS_TABLE;
-		$priceQuantityTable = $wpdb->prefix . PRICEQUANITY_TABLE;
-		$descriptionsTable  = $wpdb->prefix . DESCRIPTIONS_TABLE;
+        // Add / Update each setting as a wordpress option
+        foreach ($settings as $setting => $value) {
 
-		$charset_collate = $wpdb->get_charset_collate();
+            if (get_option( $setting ) !== false) {
+                update_option( $setting, $value );
+            } else {
+                $deprecated = null;
+                $autoload   = 'no';
+                add_option( $setting, $value, $deprecated, $autoload );
+            }
+        }
 
-		$priceQuantitySql = "CREATE TABLE $priceQuantityTable (
+        return true;
+
+    }
+
+    public function installation()
+    {
+        global $wpdb;
+        global $dbVersion;
+        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+        $paymentsTable      = $wpdb->prefix . PAYMENTS_TABLE;
+        $priceQuantityTable = $wpdb->prefix . PRICEQUANITY_TABLE;
+        $descriptionsTable  = $wpdb->prefix . DESCRIPTIONS_TABLE;
+
+        $charset_collate = $wpdb->get_charset_collate();
+
+        $priceQuantitySql = "CREATE TABLE $priceQuantityTable (
 		id mediumint(9) NOT NULL AUTO_INCREMENT,
 		name varchar(300),
 		price text,
 		UNIQUE KEY id (id)
 	) $charset_collate;";
 
-		dbDelta( $priceQuantitySql );
+        dbDelta( $priceQuantitySql );
 
-		$descriptionsSql = "CREATE TABLE $descriptionsTable (
+        $descriptionsSql = "CREATE TABLE $descriptionsTable (
 		id mediumint(9) NOT NULL AUTO_INCREMENT,
 		title varchar(300),
 		description text,
@@ -209,9 +270,9 @@ class BuyMeABeerAdmin {
 		UNIQUE KEY id (id)
 	) $charset_collate;";
 
-		dbDelta( $descriptionsSql );
+        dbDelta( $descriptionsSql );
 
-		$paymentsSql = "CREATE TABLE $paymentsTable (
+        $paymentsSql = "CREATE TABLE $paymentsTable (
 		id mediumint(9) NOT NULL AUTO_INCREMENT,
 		paypal_id varchar(300),
 		email varchar(300),
@@ -223,74 +284,101 @@ class BuyMeABeerAdmin {
 		UNIQUE KEY id (id)
 	) $charset_collate;";
 
-		dbDelta( $paymentsSql );
+        dbDelta( $paymentsSql );
 
-		add_option( 'bmabDatabaseVersion', $dbVersion );
-	}
+        add_option( 'bmabDatabaseVersion', $dbVersion );
+    }
 
-	/**
-	 * Front end CSS
-	 */
-	public function adminEnqueueStyles() {
+    /**
+     * Front end CSS
+     */
+    public function adminEnqueueStyles()
+    {
 
-	}
+    }
 
-	public function adminEnqueueScripts() {
-		wp_enqueue_script( 'jquery' );
-		wp_enqueue_script( 'thickbox' );
-		wp_enqueue_script( 'media-upload' );
-		wp_enqueue_media();
+    public function adminEnqueueScripts()
+    {
+        wp_enqueue_script( 'jquery' );
+        wp_enqueue_script( 'thickbox' );
+        wp_enqueue_script( 'media-upload' );
+        wp_enqueue_media();
 
-		wp_register_script( 'bmabImageUploaderJs', WP_PLUGIN_URL . '/buymeabeer/admin/js/imageUploader.js', array
-		(
-			'jquery',
-			'media-upload',
-			'thickbox'
-		) );
-		wp_enqueue_script( 'bmabImageUploaderJs' );
+        wp_register_script( 'bmabNoty', WP_PLUGIN_URL . '/buymeabeer/admin/js/vendor/jquery.noty.packaged.min.js', array
+        (
+            'jquery'
+        ) );
 
-		wp_register_script( 'bmabAdminJs', WP_PLUGIN_URL . '/buymeabeer/admin/js/main.js', array( 'jquery' ) );
-		wp_enqueue_script( 'bmabAdminJs' );
+        wp_register_script( 'bmabImageUploaderJs', WP_PLUGIN_URL . '/buymeabeer/admin/js/imageUploader.js', array
+        (
+            'jquery',
+            'media-upload',
+            'thickbox'
+        ) );
+        wp_enqueue_script( 'bmabImageUploaderJs' );
 
-		/* Admin CSS needs to be loaded here */
-		wp_register_style( 'bmabAdminCss', WP_PLUGIN_URL . '/buymeabeer/admin/css/main.css' );
-		wp_enqueue_style( 'bmabAdminCss' );
+        wp_register_script( 'bmabAdminJs', WP_PLUGIN_URL . '/buymeabeer/admin/js/main.js', array( 'jquery', 'bmabNoty' ) );
+        wp_enqueue_script( 'bmabAdminJs' );
 
-		wp_enqueue_style( 'thickbox' );
+        /* Admin CSS needs to be loaded here */
+        wp_register_style( 'bmabAdminCss', WP_PLUGIN_URL . '/buymeabeer/admin/css/main.css' );
+        wp_enqueue_style( 'bmabAdminCss' );
 
-	}
+        wp_enqueue_style( 'thickbox' );
 
-	function adminMenu() {
-		add_options_page( 'Buy Me A Beer', 'Buy Me A Beer', 'manage_options', 'buymeabeer', array(
-			$this,
-			'adminSettingsPage'
-		) );
-	}
+    }
 
-	function  adminSettingsPage() {
-		require_once plugin_dir_path( __FILE__ ) . 'partials/settingsManager.php';
-	}
+    function adminMenu()
+    {
+        add_options_page( 'Buy Me A Beer', 'Buy Me A Beer', 'manage_options', 'buymeabeer', array(
+            $this,
+            'adminSettingsPage'
+        ) );
+    }
 
-	public function addPostWidget() {
+    function  adminSettingsPage()
+    {
+        require_once plugin_dir_path( __FILE__ ) . 'partials/settingsManager.php';
+    }
 
-		add_meta_box(
-			'buy-me-a-beer-option',
-			'Buy Me A Beer Options',
-			array( $this, 'renderPostWidget' ),
-			'post',
-			'normal',
-			'core'
-		);
+    public function addPostWidget()
+    {
 
-	}
+        add_meta_box(
+            'buy-me-a-beer-option',
+            'Buy Me A Beer Options',
+            array( $this, 'renderPostWidget' ),
+            'post',
+            'normal',
+            'core'
+        );
 
-	public function renderPostWidget() {
-		$titlesAndDescriptions = $this->getTitlesAndDescriptions();
-		require_once plugin_dir_path( __FILE__ ) . 'partials/postManager.php';
-	}
+    }
 
-	public function savePostWidget( $postId ) {
-		$option = isset( $_REQUEST['bmabTitleDescripID'] ) ? $_REQUEST['bmabTitleDescripID'] : null;
-		update_post_meta( $postId, 'bmabDescriptionId', $option );
-	}
+    public function renderPostWidget()
+    {
+        $bmabMode   = get_option( 'bmabDisplayMode', 'automatic' );
+        $postId     = get_the_ID();
+        $bmabActive = $bmabMode == 'manual' ? get_post_meta( $postId, 'bmabActive', true ) : 1;
+        //Todo sean: figure this out
+//		if(isEditMode) {
+//			$postId = get_the_ID();
+//			$bmabActive = $bmabMode == 'manual' ? get_post_meta($postId, 'bmabActive', true) : 1;
+//		}
+
+        $titlesAndDescriptions = $this->getTitlesAndDescriptions();
+        require_once plugin_dir_path( __FILE__ ) . 'partials/postManager.php';
+    }
+
+    public function savePostWidget( $postId )
+    {
+        $bmabMode   = get_option( 'bmabDisplayMode', 'automatic' );
+        $option     = isset( $_REQUEST['bmabTitleDescripID'] ) ? $_REQUEST['bmabTitleDescripID'] : null;
+        $bmabActive = isset( $_REQUEST['bmabActive'] ) ? $_REQUEST['bmabActive'] : null;
+        update_post_meta( $postId, 'bmabDescriptionId', $option );
+        if ($bmabMode == 'manual') {
+            update_post_meta( $postId, 'bmabActive', $bmabActive );
+        }
+
+    }
 }
