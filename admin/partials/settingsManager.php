@@ -150,12 +150,12 @@
         <div class="tablenav top">
 
             <div class="alignleft actions bulkactions">
-                <label for="bulk-action-selector-top" class="screen-reader-text">Select bulk action</label><select name="action"
-                                                                                                                   id="bulk-action-selector-top">
+                <label for="bulk-action-selector-top" class="screen-reader-text">Select bulk action</label>
+                <select name="bmabPQBulkOption" id="bmabPQBulkOption">
                     <option value="-1" selected="selected">Bulk Actions</option>
-                    <option value="delete-selected">Delete</option>
+                    <option value="delete-selected" id="delete">Delete</option>
                 </select>
-                <input type="submit" name="" id="doaction" class="button action" value="Apply">
+                <input type="submit" name="" id="bmabPQBulk" class="button action" value="Apply">
                 <button id="bmabAddPQ" class="button button-primary bmabPage">Add New</button>
             </div>
             <br class="clear">
@@ -263,12 +263,12 @@
         <div class="tablenav top">
 
             <div class="alignleft actions bulkactions">
-                <label for="bulk-action-selector-top" class="screen-reader-text">Select bulk action</label><select name="action"
-                                                                                                                   id="bulk-action-selector-top">
+                <label for="bulk-action-selector-top" class="screen-reader-text">Select bulk action</label>
+                <select name="bmabDescripBulkOption" id="bmabDescripBulkOption">
                     <option value="-1" selected="selected">Bulk Actions</option>
-                    <option value="delete-selected">Delete</option>
+                    <option value="delete-selected" id="delete">Delete</option>
                 </select>
-                <input type="submit" name="" id="doaction" class="button action" value="Apply">
+                <input type="submit" name="bmabDescripBulk" id="bmabDescripBulk" class="button action" value="Apply">
                 <button id="bmabAddDescription" class="button button-primary bmabPage">Add New</button>
             </div>
             <br class="clear">

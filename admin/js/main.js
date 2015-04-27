@@ -19,7 +19,6 @@ jQuery(document).ready(function ($) {
     });
     $('body').on('click', '.bmabDefaultDescription', function (e) {
         e.preventDefault();
-        console.log("???");
         var id = $(this).attr("id");
         bmabSetDefaultDescription(id);
     });
@@ -27,6 +26,14 @@ jQuery(document).ready(function ($) {
         e.preventDefault();
         var id = $(this).attr("id");
         bmabDeleteDescription(id);
+    });
+    $('body').on('click', '#bmabDescripBulk', function (e) {
+        e.preventDefault();
+        var option = $('#bmabDescripBulkOption').children(":selected").attr("id");
+        var selectedIds = $("#bmabDescriptions input:checked").map(function (i, el) {return el.name;}).get();
+        if (option == "delete") {
+            bmabMultiDeleteDescrips(selectedIds);
+        }
     });
     $('body').on("click", ".bmabEditPQ", function (e) {
         e.preventDefault();
@@ -39,6 +46,14 @@ jQuery(document).ready(function ($) {
         e.preventDefault();
         var id = $(this).attr("id");
         bmabDeletePQ(id);
+    });
+    $('body').on('click', '#bmabPQBulk', function (e) {
+        e.preventDefault();
+        var option = $('#bmabPQBulkOption').children(":selected").attr("id");
+        var selectedIds = $("#bmabPQ input:checked").map(function (i, el) {return el.name;}).get();
+        if (option == "delete") {
+            bmabMultiDeletePQs(selectedIds);
+        }
     });
     $('tbody').on("hover", "tr", function () {
         $("tr").removeClass("active");
@@ -62,7 +77,6 @@ jQuery(document).ready(function ($) {
     });
 });
 function bmabAction(action) {
-    console.log("Loading action: " + action);
     if (action == "settings") {
         bmabSaveSettings();
     }
@@ -86,16 +100,12 @@ function bmabContent(action) {
     );
 }
 function bmabContentHandler(action, content) {
-    console.group("ContentHandler for " + action);
-    console.log(content);
-    console.groupEnd();
-    ;
     if (action == 'bmabPQ') {
         jQuery("#bmabPQContent").empty();
         jQuery.each(content, function (index, value) {
             var bmabHtml = '<tr id="buymeabeer">' +
                 '<th scope="row" class="check-column">' +
-                '<input type="checkbox" name="checked[]" value="" id="' + value.id + '">' +
+                '<input type="checkbox" class="bmabCheckedPQs" name="' + value.id + '">' +
                 '</th>' +
                 '<td class="column-name">' +
                 value.name +
@@ -118,10 +128,9 @@ function bmabContentHandler(action, content) {
     if (action == 'bmabDescriptions') {
         jQuery("#bmabDescripContent").empty();
         jQuery.each(content, function (index, value) {
-            console.log(value);
             var bmabHtml = '<tr id="buymeabeer">' +
                 '<th scope="row" class="check-column">' +
-                '<input type="checkbox" name="checked[]" value="" id="' + value.id + '">' +
+                '<input type="checkbox" class="bmabCheckedDescrips" name="' + value.id + '">' +
                 '</th>' +
                 '<td class="column-title">' +
                 value.title +
@@ -160,7 +169,6 @@ function bmabContentHandler(action, content) {
     }
 }
 function bmabPage(action) {
-    console.log("Loading page: " + action);
     bmabContent(action);
     jQuery('.bmabContent').hide();
     jQuery('.bmabPage').removeClass('current');
@@ -168,7 +176,6 @@ function bmabPage(action) {
     jQuery('.bmabContent#' + action).show();
 }
 function bmabInit() {
-    console.log("Initialising...");
     var id = "bmabMain";
     bmabPage(id);
 }
@@ -240,6 +247,16 @@ function bmabSetDefaultDescription(id) {
         }, "JSON"
     );
 }
+function bmabMultiDeleteDescrips(ids) {
+    for (index = 0; index < ids.length; ++index) {
+        id = ids[index];
+        jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {action: "deleteDescription", id: id}, function (data) {
+            }, "JSON"
+        );
+    }
+    bmabAlertMessage("Descriptions deleted!", "success");
+    bmabPage("bmabDescriptions");
+}
 function bmabDeleteDescription(id) {
     jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {action: "deleteDescription", id: id}, function (data) {
             bmabAlertMessage(data.message, data.type);
@@ -274,6 +291,17 @@ function bmabEditPQ() {
         }, "JSON"
     );
 }
+function bmabMultiDeletePQs(ids) {
+    var index;
+    for (index = 0; index < ids.length; ++index) {
+        id = ids[index];
+        jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {action: "deletePQ", id: id}, function (data) {
+            }, "JSON"
+        );
+    }
+    bmabAlertMessage("Prices deleted!", "success");
+    bmabPage("bmabPQ");
+}
 function bmabDeletePQ(id) {
     jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {action: "deletePQ", id: id}, function (data) {
             bmabAlertMessage(data.message, data.type);
@@ -296,8 +324,4 @@ function bmabAlertMessage(message, type) {
         killer: true,
         timeout: 3000
     });
-    console.group("Alert Message");
-    console.log(message);
-    console.log(type);
-    console.groupEnd();
 }
