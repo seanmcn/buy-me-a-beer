@@ -162,7 +162,7 @@ class BuyMeABeerAdmin
             $pqs[$key]->price = $this->formatAsCurrency( $value->price );
         }
 
-        $json  = json_encode( $pqs );
+        $json = json_encode( $pqs );
 
         return $json;
     }

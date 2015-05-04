@@ -160,10 +160,9 @@ function bmabContentHandler(action, content) {
             value.description +
             '</td>' +
             '<td class="column-image">' +
-            value.image +
+            '<img src="' + value.image + '" height="80px">' +
             '</td>' +
             '</tr>';
-            //default_option
             jQuery(bmabHtml).appendTo("#bmabDescripContent");
         });
     }
