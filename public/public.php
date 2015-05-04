@@ -1,13 +1,15 @@
 <?php
-
+require_once( ABSPATH . "wp-content/plugins/buymeabeer/includes/config.php" );
 class BuyMeABeerPublic
 {
-
     private $version;
+
+    // public $currencyMappings = $currencyMappings;
 
     public function __construct( $version )
     {
         $this->version = $version;
+        $this->bmabCurrency = get_option( 'bmabCurrency', 'USD' );
     }
 
     public function displayPostWidget( $content )
@@ -56,7 +58,6 @@ class BuyMeABeerPublic
         global $wpdb;
         $table       = $wpdb->prefix . DESCRIPTIONS_TABLE;
         $description = $wpdb->get_row( "SELECT * FROM $table WHERE id=$id" );
-
         return $description;
     }
 
@@ -74,7 +75,18 @@ class BuyMeABeerPublic
         global $wpdb;
         $table = $wpdb->prefix . PRICEQUANITY_TABLE;
         $pqs = $wpdb->get_results( "SELECT * FROM $table" );
-
+        foreach ($pqs as $key => $value) {
+            $pqs[$key]->price = $this->formatAsCurrency( $value->price );
+        }
         return $pqs;
+    }
+
+    function formatAsCurrency( $value )
+    {
+        global $currencyMappings;
+        $currency = $this->bmabCurrency;
+        $newValue = $currencyMappings[$currency]['pre'] . $value . $currencyMappings[$currency]['post'];
+
+        return $newValue;
     }
 }

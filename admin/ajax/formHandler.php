@@ -1,6 +1,6 @@
 <?php
 require_once( "../../../../../wp-load.php" );
-require_once( ABSPATH . "wp-content/plugins/buymeabeer/admin/config.php" );
+require_once( ABSPATH . "wp-content/plugins/buymeabeer/includes/config.php" );
 
 $bmab      = new BuyMeABeer();
 $version   = $bmab->getVersion();

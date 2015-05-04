@@ -37,7 +37,7 @@ class BuyMeABeerPaypal
         $paymentObject['transactions'][] = array(
             'amount'      => array(
                 'total'    => $price,
-                'currency' => 'USD',
+                'currency' => $this->bmabCurrency,
                 'details'  => array(
                     'subtotal' => $price,
                     'tax'      => '0.00',

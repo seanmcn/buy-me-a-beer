@@ -1,5 +1,5 @@
 <?php
-require_once( ABSPATH . "wp-content/plugins/buymeabeer/admin/config.php" );
+require_once( ABSPATH . "wp-content/plugins/buymeabeer/includes/config.php" );
 
 class BuyMeABeerAdmin
 {
@@ -9,6 +9,7 @@ class BuyMeABeerAdmin
     public function __construct( $version )
     {
         $this->version = $version;
+        $this->bmabCurrency = get_option( 'bmabCurrency', 'USD' );
     }
 
     function getTitlesAndDescriptions()
@@ -156,9 +157,23 @@ class BuyMeABeerAdmin
         global $wpdb;
         $table = $wpdb->prefix . PRICEQUANITY_TABLE;
         $pqs   = $wpdb->get_results( "SELECT * FROM $table" );
+
+        foreach ($pqs as $key => $value) {
+            $pqs[$key]->price = $this->formatAsCurrency( $value->price );
+        }
+
         $json  = json_encode( $pqs );
 
         return $json;
+    }
+
+    function formatAsCurrency( $value )
+    {
+        global $currencyMappings;
+        $currency = $this->bmabCurrency;
+        $newValue = $currencyMappings[$currency]['pre'] . $value . $currencyMappings[$currency]['post'];
+
+        return $newValue;
     }
 
     function addPQ( $name, $price )
