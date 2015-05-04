@@ -225,7 +225,7 @@ class BuyMeABeerAdmin
             'bmabDisplayMode'    => $displayMode
         );
 
-        // Add / Update each setting as a wordpress option
+        // Add/Update each setting as a wordpress option
         foreach ($settings as $setting => $value) {
 
             if (get_option( $setting ) !== false) {
@@ -239,6 +239,18 @@ class BuyMeABeerAdmin
 
         return true;
 
+    }
+
+    public function getPayments()
+    {
+        global $wpdb;
+        $table    = $wpdb->prefix . PAYMENTS_TABLE;
+        $payments = $wpdb->get_results( "SELECT * FROM $table" );
+
+        /* Format the $payments['linkedFrom'] & $payments['descriptionTitle'] here */
+        $json = json_encode( $payments );
+
+        return $json;
     }
 
     public function installation()
@@ -275,11 +287,14 @@ class BuyMeABeerAdmin
         $paymentsSql = "CREATE TABLE $paymentsTable (
 		id mediumint(9) NOT NULL AUTO_INCREMENT,
 		paypal_id varchar(300),
+		amount int(100),
 		email varchar(300),
 		first_name varchar(300),
 		last_name varchar(300),
 		address text,
 		payment_method varchar(300),
+		post_id int(100),
+		description_id int(100),
 		time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 		UNIQUE KEY id (id)
 	) $charset_collate;";
@@ -287,6 +302,14 @@ class BuyMeABeerAdmin
         dbDelta( $paymentsSql );
 
         add_option( 'bmabDatabaseVersion', $dbVersion );
+
+        $this->addPQ( "1 Beer", 3 );
+        $this->addPQ( "6 Beers", 15 );
+        $this->addPQ( "12 Beers", 25 );
+        $this->addPQ( '36 Beers', 45 );
+        $this->addPQ( "Keg of Beer", 125 );
+
+        $this->addDescription( 'Did I help you out?', 'If so how about buying me some beer?', '' );
     }
 
     /**

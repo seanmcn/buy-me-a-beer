@@ -86,10 +86,10 @@ class BuyMeABeerPaypal
 
             $this->savePayment( $params );
             //Todo Sean: Thank you page ->
-            wp_redirect( home_url() . '/thank-you' );
+            //wp_redirect( home_url() . '/thank-you' );
         } else {
             //Todo Sean : Payment Failed page ->
-            wp_redirect( home_url() . '/payment-failed' );
+            // wp_redirect( home_url() . '/payment-failed' );
         }
     }
 

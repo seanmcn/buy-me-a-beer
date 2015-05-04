@@ -32,6 +32,10 @@ switch ($action) {
         }
         break;
 
+    case "bmabPayments":
+        echo $bmabAdmin->getPayments();
+        break;
+
     default :
         echo "Error: What are you up to?";
 

@@ -103,7 +103,7 @@ function bmabContentHandler(action, content) {
     if (action == 'bmabPQ') {
         jQuery("#bmabPQContent").empty();
         jQuery.each(content, function (index, value) {
-            var bmabHtml = '<tr id="buymeabeer">' +
+            var bmabHtml = '<tr class="bmabPqRow">' +
                 '<th scope="row" class="check-column">' +
                 '<input type="checkbox" class="bmabCheckedPQs" name="' + value.id + '">' +
                 '</th>' +
@@ -128,7 +128,7 @@ function bmabContentHandler(action, content) {
     if (action == 'bmabDescriptions') {
         jQuery("#bmabDescripContent").empty();
         jQuery.each(content, function (index, value) {
-            var bmabHtml = '<tr id="buymeabeer">' +
+            var bmabHtml = '<tr class="bmabDescripRow">' +
                 '<th scope="row" class="check-column">' +
                 '<input type="checkbox" class="bmabCheckedDescrips" name="' + value.id + '">' +
                 '</th>' +
@@ -165,6 +165,22 @@ function bmabContentHandler(action, content) {
             '</tr>';
             //default_option
             jQuery(bmabHtml).appendTo("#bmabDescripContent");
+        });
+    }
+    if (action == 'bmabPayments') {
+        jQuery("#bmabPaymentsContent").empty();
+        jQuery.each(content, function (index, value) {
+            var bmabHtml = '<tr>' +
+                    '<td>' + value.paypal_id + '</td>' +
+                    '<td>' + value.price + '</td>' +
+                    '<td>' + value.email + '</td>' +
+                    '<td>' + value.first_name + ' ' + value.last_name + '</td>' +
+                    '<td>' + value.time + '</td>' +
+                    '<td>' + value.linkedFrom + '</td>' +
+                    '<td>' + value.descriptionTitle + '</td>' +
+                    '</tr>'
+                ;
+            jQuery(bmabHtml).appendTo("#bmabPaymentsContent");
         });
     }
 }

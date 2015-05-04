@@ -17,6 +17,10 @@
                 Descriptions</a>
             |
         </li>
+        <li class="inactive"><a href="" id="bmabPayments" class="bmabPage">Payments</a>
+
+            |
+        </li>
         <li class="inactive"><a href="" id="bmabHelp" class="bmabPage">Help</a></li>
     </ul>
 
@@ -307,6 +311,8 @@
             <button id="bmabAddDescription" class="button button-primary bmabPage">Add New</button>
         </p>
     </div>
+
+    <!-- Add Description -->
     <div class="bmabContent" id="bmabAddDescription">
         <h3>Add Title &amp; Description</h3>
         <table class="form-table">
@@ -351,6 +357,7 @@
         </table>
     </div>
 
+    <!-- Edit Description -->
     <div class="bmabContent" id="bmabEditDescription">
         <h3>Edit Title &amp; Description</h3>
         <table class="form-table">
@@ -392,6 +399,26 @@
                     <button id="bmabEditDescription" class="bmabAction button button-primary">Save</button>
                 </td>
             </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Payments -->
+    <div class="bmabContent" id="bmabPayments">
+        <table class="wp-list-table widefat plugins">
+            <thead>
+            <tr>
+                <th scope="col" class="manage-column column-title">Paypal ID</th>
+                <th scope="col" class="manage-column column-title">Price</th>
+                <th scope="col" class="manage-column column-title">Email</th>
+                <th scope="col" class="manage-column column-title">Name</th>
+                <th scope="col" class="manage-column column-title">Date</th>
+                <th scope="col" class="manage-column column-title">Post Linked From</th>
+                <th scope="col" class="manage-column column-title">Description Title</th>
+            </tr>
+            </thead>
+            <tbody id="bmabPaymentsContent">
+
             </tbody>
         </table>
     </div>
