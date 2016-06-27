@@ -403,6 +403,5 @@ class BuyMeABeerAdmin {
 		if ( $bmabMode == 'manual' ) {
 			update_post_meta( $postId, 'bmabActive', $bmabActive );
 		}
-
 	}
 }

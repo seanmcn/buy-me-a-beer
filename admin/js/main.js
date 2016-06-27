@@ -83,6 +83,7 @@ jQuery(document).ready(function ($) {
     });
 });
 function bmabAction(action) {
+    console.log("bmabAction:: "+action);
     if (action == "settings") {
         bmabSaveSettings();
     }
@@ -100,7 +101,7 @@ function bmabAction(action) {
     }
 }
 function bmabContent(action) {
-    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/contentHandler.php', {action: action}, function (data) {
+    jQuery.post(ajaxurl, {action: "bmab_contentHandler", run: action}, function (data) {
             bmabContentHandler(action, data);
         }, "json"
     );
@@ -207,8 +208,9 @@ function bmabSaveSettings() {
     var paypalClientId = jQuery('#paypalClientId').val();
     var paypalSecret = jQuery('#paypalSecret').val();
     var currency = jQuery('#bmabCurrency').find('option:selected').attr('id');
-    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
-            action: "saveSettings",
+    jQuery.post(ajaxurl, {
+            action: "bamb_formHandler",
+            run: "saveSettings",
             paypalEmail: paypalEmail,
             paypalMode: paypalMode,
             paypalClientId: paypalClientId,
@@ -224,8 +226,9 @@ function bmabAddDescription() {
     var title = jQuery('#newDescriptionTitle').val();
     var description = jQuery('#newDescriptionDescription').val();
     var image = jQuery('#descriptionImage').val();
-    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
-            action: "addDescription",
+    jQuery.post(ajaxurl, {
+            action: "bmab_formHandler",
+            run: "addDescription",
             title: title,
             description: description,
             image: image
@@ -236,8 +239,9 @@ function bmabAddDescription() {
     );
 }
 function bmabLoadDescription(action, id) {
-    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/contentHandler.php', {
-            action: action,
+    jQuery.post(ajaxurl, {
+            action: "bmab_contentHandler",
+            run: action,
             id: id
         }, function (data) {
         }, "json"
@@ -253,8 +257,9 @@ function bmabEditDescription() {
     var description = jQuery('#editDescriptionDescription').val();
     var image = jQuery('#bmabEditDescription #descriptionImage').val();
     var id = jQuery('#editDescriptionId').val();
-    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
-            action: "editDescription",
+    jQuery.post(ajaxurl, {
+            action: "bmab_formHandler",
+            run: "editDescription",
             id: id,
             title: title,
             description: description,
@@ -266,8 +271,9 @@ function bmabEditDescription() {
     );
 }
 function bmabSetDefaultDescription(id) {
-    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
-            action: "defaultDescription",
+    jQuery.post(ajaxurl, {
+            action: "bmab_formHandler",
+            run: "defaultDescription",
             id: id
         }, function (data) {
             bmabAlertMessage(data.message, data.type);
@@ -278,8 +284,9 @@ function bmabSetDefaultDescription(id) {
 function bmabMultiDeleteDescrips(ids) {
     for (index = 0; index < ids.length; ++index) {
         id = ids[index];
-        jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
-                action: "deleteDescription",
+        jQuery.post(ajaxurl, {
+                action: "bmab_formHandler",
+                run: "deleteDescription",
                 id: id
             }, function (data) {
             }, "JSON"
@@ -289,8 +296,9 @@ function bmabMultiDeleteDescrips(ids) {
     bmabPage("bmabDescriptions");
 }
 function bmabDeleteDescription(id) {
-    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
-            action: "deleteDescription",
+    jQuery.post(ajaxurl, {
+            action: "bmab_formHandler",
+            run: "deleteDescription",
             id: id
         }, function (data) {
             bmabAlertMessage(data.message, data.type);
@@ -301,8 +309,9 @@ function bmabDeleteDescription(id) {
 function bmabAddPQ() {
     var name = jQuery('#newPQName').val();
     var price = jQuery('#newPQPrice').val();
-    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
-            action: "addPQ",
+    jQuery.post(ajaxurl, {
+            action: "bmab_formHandler",
+            run: "addPQ",
             name: name,
             price: price
         }, function (data) {
@@ -312,8 +321,9 @@ function bmabAddPQ() {
     );
 }
 function bmabLoadPQ(action, id) {
-    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/contentHandler.php', {
-            action: action,
+    jQuery.post(ajaxurl, {
+            action: "bmab_contentHandler",
+            run: action,
             id: id
         }, function (data) {
         }, "json"
@@ -327,8 +337,9 @@ function bmabEditPQ() {
     var id = jQuery("#editPQId").val();
     var name = jQuery('#editPQName').val();
     var price = jQuery('#editPQPrice').val();
-    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
-            action: "editPQ",
+    jQuery.post(ajaxurl, {
+            action: "bmab_formHandler",
+            run: "editPQ",
             id: id,
             name: name,
             price: price
@@ -342,8 +353,9 @@ function bmabMultiDeletePQs(ids) {
     var index;
     for (index = 0; index < ids.length; ++index) {
         id = ids[index];
-        jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
-                action: "deletePQ",
+        jQuery.post(ajaxurl, {
+                action: "bmab_formHandler",
+                run: "deletePQ",
                 id: id
             }, function (data) {
             }, "JSON"
@@ -353,8 +365,9 @@ function bmabMultiDeletePQs(ids) {
     bmabPage("bmabPQ");
 }
 function bmabDeletePQ(id) {
-    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
-            action: "deletePQ",
+    jQuery.post(ajaxurl, {
+            action: "bmab_formHandler",
+            run: "deletePQ",
             id: id
         }, function (data) {
             bmabAlertMessage(data.message, data.type);
@@ -363,6 +376,7 @@ function bmabDeletePQ(id) {
     );
 }
 function bmabAlertMessage(message, type) {
+    console.log(message, type);
     jQuery('#alertArea').noty({
         type: type,
         theme: 'relax',
