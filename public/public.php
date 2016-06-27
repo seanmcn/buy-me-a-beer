@@ -1,5 +1,6 @@
 <?php
-require_once( ABSPATH . "wp-content/plugins/buymeabeer/includes/config.php" );
+require_once( plugin_dir_path( __DIR__ ) . "includes/config.php" );
+
 class BuyMeABeerPublic
 {
     private $version;

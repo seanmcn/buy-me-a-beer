@@ -1,3 +1,4 @@
+<!-- Todo Sean: Fix path -->
 <form method="POST" action="/wp-content/plugins/buymeabeer/public/ajax/formHandler.php">
     <div class="bmabWrapper">
         <div class="bmabImage">
