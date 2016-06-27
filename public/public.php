@@ -13,10 +13,11 @@ class BuyMeABeerPublic {
 
 	public function displayPostWidget( $content ) {
 		if ( ! is_home() ) {
-			wp_register_script( 'bmabJs', WP_PLUGIN_URL . '/buymeabeer/public/js/main.js', array( 'jquery' ) );
+
+			wp_register_script( 'bmabJs', plugins_url( 'public/js/main.js', __DIR__ ), array( 'jquery' ) );
 			wp_enqueue_script( 'bmabJs' );
 
-			wp_register_style( 'bmabCss', WP_PLUGIN_URL . '/buymeabeer/public/css/main.css' );
+			wp_register_style( 'bmabCss', plugins_url( '/buymeabeer/public/css/main.css', __DIR__ ) );
 			wp_enqueue_style( 'bmabCss' );
 
 			$postId = get_the_ID();
@@ -40,7 +41,7 @@ class BuyMeABeerPublic {
 				$image       = $descriptionFull->image;
 
 				ob_start();
-				require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/partials/postWidget.php';
+				require_once plugin_dir_path( __DIR__ ) . 'public/partials/postWidget.php';
 				$template = ob_get_contents();
 				$content .= $template;
 				ob_end_clean();

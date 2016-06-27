@@ -317,30 +317,37 @@ class BuyMeABeerAdmin {
 	}
 
 	public function adminEnqueueScripts() {
+		/* Admin JS gets loaded here */
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'thickbox' );
 		wp_enqueue_script( 'media-upload' );
 		wp_enqueue_media();
 
-		wp_register_script( 'bmabNoty', WP_PLUGIN_URL . '/buymeabeer/admin/js/vendor/jquery.noty.packaged.min.js', array
-		(
-			'jquery'
-		) );
+		wp_register_script( 'bmabNoty', plugins_url( 'admin/js/vendor/jquery.noty.packaged.min.js', __DIR__ ),
+			array
+			(
+				'jquery'
+			) );
 
-		wp_register_script( 'bmabImageUploaderJs', WP_PLUGIN_URL . '/buymeabeer/admin/js/imageUploader.js', array
-		(
-			'jquery',
-			'media-upload',
-			'thickbox'
-		) );
+		wp_register_script( 'bmabImageUploaderJs', plugins_url( 'admin/js/imageUploader.js', __DIR__ ),
+			array
+			(
+				'jquery',
+				'media-upload',
+				'thickbox'
+			) );
 		wp_enqueue_script( 'bmabImageUploaderJs' );
 
-		wp_register_script( 'bmabAdminJs', WP_PLUGIN_URL . '/buymeabeer/admin/js/main.js',
-			array( 'jquery', 'bmabNoty' ) );
+		wp_register_script( 'bmabAdminJs', plugins_url( 'admin/js/main.js', __DIR__ ),
+			array(
+				'jquery',
+				'bmabNoty'
+			) );
+
 		wp_enqueue_script( 'bmabAdminJs' );
 
-		/* Admin CSS needs to be loaded here */
-		wp_register_style( 'bmabAdminCss', WP_PLUGIN_URL . '/buymeabeer/admin/css/main.css' );
+		/* Admin CSS gets loaded here */
+		wp_register_style( 'bmabAdminCss', plugins_url( 'admin/css/main.css', __DIR__ ) );
 		wp_enqueue_style( 'bmabAdminCss' );
 
 		wp_enqueue_style( 'thickbox' );

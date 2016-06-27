@@ -44,8 +44,8 @@ class BuyMeABeerPaypal {
 			'description' => "$priceName for $blogName"
 		);
 		$paymentObject['redirect_urls']           = array(
-			'return_url' => plugins_url() . '/buymeabeer/public/ajax/paypalReturn.php',
-			'cancel_url' => plugins_url() . '/buymeabeer/public/ajax/paypalCancel.php',
+			'return_url' => plugins_url('public/ajax/paypalReturn.php', __DIR__),
+			'cancel_url' => plugins_url('public/ajax/paypalCancel.php', __DIR__),
 		);
 		$paymentJsonObject                        = json_encode( $paymentObject );
 
