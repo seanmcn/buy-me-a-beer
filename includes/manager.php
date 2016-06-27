@@ -53,8 +53,8 @@ class BuyMeABeer {
 
 		// Ajax Calls
 		$ajax = new BuyMeABeerAjax($admin);
-		$this->loader->addAction( 'bmab_formHandler', $ajax, 'formHandler' );
-		$this->loader->addAction( 'bmab_contentHandler', $ajax, 'contentHandler' );
+		$this->loader->addAction( 'wp_ajax_bmab_formHandler', $ajax, 'formHandler' );
+		$this->loader->addAction( 'wp_ajax_bmab_contentHandler', $ajax, 'contentHandler' );
 	}
 
 	/**

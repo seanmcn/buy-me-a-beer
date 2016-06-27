@@ -17,7 +17,7 @@ class BuyMeABeerAjax {
 	 *
 	 * @param BuyMeABeerAdmin $bmabAdmin
 	 */
-	function __construct(BuyMeABeerAdmin $bmabAdmin) {
+	function __construct( BuyMeABeerAdmin $bmabAdmin ) {
 		$this->bmabAdmin = $bmabAdmin;
 	}
 
@@ -129,7 +129,10 @@ class BuyMeABeerAjax {
 			case "deletePQ":
 				$id = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
 				if ( $id == null ) {
-					$error = [ "message" => "You didn't specify which 'Quantity / Price' to delete", "type" => "error" ];
+					$error = [
+						"message" => "You didn't specify which 'Quantity / Price' to delete",
+						"type"    => "error"
+					];
 					echo json_encode( $error );
 				} else {
 					$this->bmabAdmin->deletePQ( $id );
@@ -143,13 +146,13 @@ class BuyMeABeerAjax {
 				echo json_encode( $error );
 				break;
 		}
+		wp_die(); // this is required to terminate immediately and return a proper response
 	}
 
 	function contentHandler() {
 		$action = isset( $_REQUEST['run'] ) ? $_REQUEST['run'] : null;
 
 		switch ( $action ) {
-
 			case "bmabPQ":
 				echo $this->bmabAdmin->getPQs();
 				break;
@@ -182,5 +185,6 @@ class BuyMeABeerAjax {
 				break;
 
 		}
+		wp_die(); // this is required to terminate immediately and return a proper response
 	}
 }
