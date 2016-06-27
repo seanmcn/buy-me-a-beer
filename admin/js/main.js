@@ -1,34 +1,36 @@
 jQuery.noConflict();
 jQuery(document).ready(function ($) {
-    $('body').on("click", ".bmabPage", function (e) {
+    var body = $('body');
+    body.on("click", ".bmabPage", function (e) {
         e.preventDefault();
         var id = $(this).attr("id");
         bmabPage(id);
     });
-    $('body').on("click", ".bmabAction", function (e) {
+    body.on("click", ".bmabAction", function (e) {
         e.preventDefault();
         var id = $(this).attr("id");
         bmabAction(id);
     });
-    $('body').on("click", ".bmabEditDescription", function (e) {
+    body.on("click", ".bmabEditDescription", function (e) {
         e.preventDefault();
         var action = 'bmabEditDescription';
         var id = $(this).attr("id");
         bmabPage(action);
         bmabLoadDescription(action, id);
     });
-    $('body').on('click', '.bmabDefaultDescription', function (e) {
+    body.on('click', '.bmabDefaultDescription', function (e) {
         e.preventDefault();
         var id = $(this).attr("id");
         bmabSetDefaultDescription(id);
     });
-    $('body').on("click", ".bmabDeleteDescription", function (e) {
+    body.on("click", ".bmabDeleteDescription", function (e) {
         e.preventDefault();
         var id = $(this).attr("id");
         bmabDeleteDescription(id);
     });
-    $('body').on('click', '#bmabDescripBulk', function (e) {
+    body.on('click', '#bmabDescripBulk', function (e) {
         e.preventDefault();
+        //Todo Sean: fix, better jQuery usage
         var option = $('#bmabDescripBulkOption').children(":selected").attr("id");
         var selectedIds = $("#bmabDescriptions input:checked").map(function (i, el) {
             return el.name;
@@ -37,19 +39,19 @@ jQuery(document).ready(function ($) {
             bmabMultiDeleteDescrips(selectedIds);
         }
     });
-    $('body').on("click", ".bmabEditPQ", function (e) {
+    body.on("click", ".bmabEditPQ", function (e) {
         e.preventDefault();
         var action = 'bmabEditPQ';
         var id = $(this).attr("id");
         bmabPage(action);
         bmabLoadPQ(action, id);
     });
-    $('body').on("click", ".bmabDeletePQ", function (e) {
+    body.on("click", ".bmabDeletePQ", function (e) {
         e.preventDefault();
         var id = $(this).attr("id");
         bmabDeletePQ(id);
     });
-    $('body').on('click', '#bmabPQBulk', function (e) {
+    body.on('click', '#bmabPQBulk', function (e) {
         e.preventDefault();
         var option = $('#bmabPQBulkOption').children(":selected").attr("id");
         var selectedIds = $("#bmabPQ input:checked").map(function (i, el) {
@@ -63,12 +65,12 @@ jQuery(document).ready(function ($) {
         $("tr").removeClass("active");
         $(this).addClass("active");
     });
-    $('body').on("change", "#bmabTitleDescripID", function (e) {
+    body.on("change", "#bmabTitleDescripID", function (e) {
         var id = $(this).children(":selected").attr("id");
         $('.tdPreview').hide();
         $('#' + id + '.tdPreview').show();
     });
-    $('body').on("change", "#bmabActive", function (e) {
+    body.on("change", "#bmabActive", function (e) {
         var id = $(this).children(":selected").attr("id");
         if (id == 'on') {
             $('.bmabWrapper').css("display", "block");
