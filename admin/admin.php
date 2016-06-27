@@ -266,7 +266,7 @@ class BuyMeABeerAdmin {
 		name varchar(300),
 		price text,
 		UNIQUE KEY id (id)
-	) $charset_collate;";
+	).$charset_collate;";
 
 		dbDelta( $priceQuantitySql );
 

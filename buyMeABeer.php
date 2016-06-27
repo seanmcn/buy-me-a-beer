@@ -18,19 +18,18 @@
  * Domain Path:       /languages
  */
 // If this file is called directly, then abort execution.
-if ( ! defined( 'WPINC' )) {
-    die;
+if ( ! defined( 'WPINC' ) ) {
+	die;
 }
 
 require_once plugin_dir_path( __FILE__ ) . 'includes/manager.php';
 
 
-function runBuyMeABeerPlugin()
-{
+function runBuyMeABeerPlugin() {
 
-    $bmab = new BuyMeABeer();
-    register_activation_hook( __FILE__, array( $bmab, 'activatePlugin' ) );
-    $bmab->run();
+	$bmab = new BuyMeABeer();
+	register_activation_hook( __FILE__, array( $bmab, 'activatePlugin' ) );
+	$bmab->run();
 
 
 }

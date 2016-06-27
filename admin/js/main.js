@@ -30,7 +30,9 @@ jQuery(document).ready(function ($) {
     $('body').on('click', '#bmabDescripBulk', function (e) {
         e.preventDefault();
         var option = $('#bmabDescripBulkOption').children(":selected").attr("id");
-        var selectedIds = $("#bmabDescriptions input:checked").map(function (i, el) {return el.name;}).get();
+        var selectedIds = $("#bmabDescriptions input:checked").map(function (i, el) {
+            return el.name;
+        }).get();
         if (option == "delete") {
             bmabMultiDeleteDescrips(selectedIds);
         }
@@ -50,7 +52,9 @@ jQuery(document).ready(function ($) {
     $('body').on('click', '#bmabPQBulk', function (e) {
         e.preventDefault();
         var option = $('#bmabPQBulkOption').children(":selected").attr("id");
-        var selectedIds = $("#bmabPQ input:checked").map(function (i, el) {return el.name;}).get();
+        var selectedIds = $("#bmabPQ input:checked").map(function (i, el) {
+            return el.name;
+        }).get();
         if (option == "delete") {
             bmabMultiDeletePQs(selectedIds);
         }
@@ -143,26 +147,26 @@ function bmabContentHandler(action, content) {
                 '</span>';
             if (value.default_option == 1) {
                 bmabHtml = bmabHtml +
-                '<span class="default currentDefault" >' +
-                'Current Default' +
-                '</span>';
+                    '<span class="default currentDefault" >' +
+                    'Current Default' +
+                    '</span>';
             }
             else {
                 bmabHtml = bmabHtml +
-                '<span class="default" >' +
-                '<a href="" class="bmabDefaultDescription" id="' + value.id + '">Default</a>' +
-                '</span>';
+                    '<span class="default" >' +
+                    '<a href="" class="bmabDefaultDescription" id="' + value.id + '">Default</a>' +
+                    '</span>';
             }
             bmabHtml = bmabHtml +
-            '</div>' +
-            '</td>' +
-            '<td class="column-description">' +
-            value.description +
-            '</td>' +
-            '<td class="column-image">' +
-            '<img src="' + value.image + '" height="80px">' +
-            '</td>' +
-            '</tr>';
+                '</div>' +
+                '</td>' +
+                '<td class="column-description">' +
+                value.description +
+                '</td>' +
+                '<td class="column-image">' +
+                '<img src="' + value.image + '" height="80px">' +
+                '</td>' +
+                '</tr>';
             jQuery(bmabHtml).appendTo("#bmabDescripContent");
         });
     }
@@ -230,13 +234,17 @@ function bmabAddDescription() {
     );
 }
 function bmabLoadDescription(action, id) {
-    jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/contentHandler.php', {action: action, id: id}, function (data) {}, "json"
+    jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/contentHandler.php', {
+            action: action,
+            id: id
+        }, function (data) {
+        }, "json"
     ).done(function (data) {
-            jQuery('#editDescriptionTitle').val(data.title);
-            jQuery('#editDescriptionDescription').val(data.description);
-            jQuery('#bmabEditDescription #descriptionImage').val(data.image);
-            jQuery('#editDescriptionId').val(data.id);
-        });
+        jQuery('#editDescriptionTitle').val(data.title);
+        jQuery('#editDescriptionDescription').val(data.description);
+        jQuery('#bmabEditDescription #descriptionImage').val(data.image);
+        jQuery('#editDescriptionId').val(data.id);
+    });
 }
 function bmabEditDescription() {
     var title = jQuery('#editDescriptionTitle').val();
@@ -256,7 +264,10 @@ function bmabEditDescription() {
     );
 }
 function bmabSetDefaultDescription(id) {
-    jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {action: "defaultDescription", id: id}, function (data) {
+    jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {
+            action: "defaultDescription",
+            id: id
+        }, function (data) {
             bmabAlertMessage(data.message, data.type);
             bmabPage("bmabDescriptions");
         }, "JSON"
@@ -265,7 +276,10 @@ function bmabSetDefaultDescription(id) {
 function bmabMultiDeleteDescrips(ids) {
     for (index = 0; index < ids.length; ++index) {
         id = ids[index];
-        jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {action: "deleteDescription", id: id}, function (data) {
+        jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {
+                action: "deleteDescription",
+                id: id
+            }, function (data) {
             }, "JSON"
         );
     }
@@ -273,7 +287,10 @@ function bmabMultiDeleteDescrips(ids) {
     bmabPage("bmabDescriptions");
 }
 function bmabDeleteDescription(id) {
-    jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {action: "deleteDescription", id: id}, function (data) {
+    jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {
+            action: "deleteDescription",
+            id: id
+        }, function (data) {
             bmabAlertMessage(data.message, data.type);
             bmabPage("bmabDescriptions");
         }, "JSON"
@@ -282,25 +299,38 @@ function bmabDeleteDescription(id) {
 function bmabAddPQ() {
     var name = jQuery('#newPQName').val();
     var price = jQuery('#newPQPrice').val();
-    jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {action: "addPQ", name: name, price: price}, function (data) {
+    jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {
+            action: "addPQ",
+            name: name,
+            price: price
+        }, function (data) {
             bmabAlertMessage(data.message, data.type);
             bmabPage("bmabPQ");
         }, "JSON"
     );
 }
 function bmabLoadPQ(action, id) {
-    jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/contentHandler.php', {action: action, id: id}, function (data) {}, "json"
+    jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/contentHandler.php', {
+            action: action,
+            id: id
+        }, function (data) {
+        }, "json"
     ).done(function (data) {
-            jQuery('#editPQName').val(data.name);
-            jQuery('#editPQPrice').val(data.price);
-            jQuery('#editPQId').val(data.id);
-        });
+        jQuery('#editPQName').val(data.name);
+        jQuery('#editPQPrice').val(data.price);
+        jQuery('#editPQId').val(data.id);
+    });
 }
 function bmabEditPQ() {
     var id = jQuery("#editPQId").val();
     var name = jQuery('#editPQName').val();
     var price = jQuery('#editPQPrice').val();
-    jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {action: "editPQ", id: id, name: name, price: price}, function (data) {
+    jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {
+            action: "editPQ",
+            id: id,
+            name: name,
+            price: price
+        }, function (data) {
             bmabAlertMessage(data.message, data.type);
             bmabPage("bmabPQ");
         }, "JSON"
@@ -310,7 +340,10 @@ function bmabMultiDeletePQs(ids) {
     var index;
     for (index = 0; index < ids.length; ++index) {
         id = ids[index];
-        jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {action: "deletePQ", id: id}, function (data) {
+        jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {
+                action: "deletePQ",
+                id: id
+            }, function (data) {
             }, "JSON"
         );
     }
@@ -318,7 +351,10 @@ function bmabMultiDeletePQs(ids) {
     bmabPage("bmabPQ");
 }
 function bmabDeletePQ(id) {
-    jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {action: "deletePQ", id: id}, function (data) {
+    jQuery.post('/wp-content/plugins/buymeabeer/admin/ajax/formHandler.php', {
+            action: "deletePQ",
+            id: id
+        }, function (data) {
             bmabAlertMessage(data.message, data.type);
             bmabPage("bmabPQ");
         }, "JSON"
