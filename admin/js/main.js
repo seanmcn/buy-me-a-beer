@@ -100,7 +100,7 @@ function bmabAction(action) {
     }
 }
 function bmabContent(action) {
-    jQuery.post(BuyMeABeer.pluginsUrl+'/admin/ajax/contentHandler.php', {action: action}, function (data) {
+    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/contentHandler.php', {action: action}, function (data) {
             bmabContentHandler(action, data);
         }, "json"
     );
@@ -207,7 +207,7 @@ function bmabSaveSettings() {
     var paypalClientId = jQuery('#paypalClientId').val();
     var paypalSecret = jQuery('#paypalSecret').val();
     var currency = jQuery('#bmabCurrency').find('option:selected').attr('id');
-    jQuery.post(BuyMeABeer.pluginsUrl+'/admin/ajax/formHandler.php', {
+    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
             action: "saveSettings",
             paypalEmail: paypalEmail,
             paypalMode: paypalMode,
@@ -224,7 +224,7 @@ function bmabAddDescription() {
     var title = jQuery('#newDescriptionTitle').val();
     var description = jQuery('#newDescriptionDescription').val();
     var image = jQuery('#descriptionImage').val();
-    jQuery.post(BuyMeABeer.pluginsUrl+'/admin/ajax/formHandler.php', {
+    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
             action: "addDescription",
             title: title,
             description: description,
@@ -236,7 +236,7 @@ function bmabAddDescription() {
     );
 }
 function bmabLoadDescription(action, id) {
-    jQuery.post(BuyMeABeer.pluginsUrl+'/admin/ajax/contentHandler.php', {
+    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/contentHandler.php', {
             action: action,
             id: id
         }, function (data) {
@@ -253,7 +253,7 @@ function bmabEditDescription() {
     var description = jQuery('#editDescriptionDescription').val();
     var image = jQuery('#bmabEditDescription #descriptionImage').val();
     var id = jQuery('#editDescriptionId').val();
-    jQuery.post(BuyMeABeer.pluginsUrl+'/admin/ajax/formHandler.php', {
+    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
             action: "editDescription",
             id: id,
             title: title,
@@ -266,7 +266,7 @@ function bmabEditDescription() {
     );
 }
 function bmabSetDefaultDescription(id) {
-    jQuery.post(BuyMeABeer.pluginsUrl+'/admin/ajax/formHandler.php', {
+    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
             action: "defaultDescription",
             id: id
         }, function (data) {
@@ -278,7 +278,7 @@ function bmabSetDefaultDescription(id) {
 function bmabMultiDeleteDescrips(ids) {
     for (index = 0; index < ids.length; ++index) {
         id = ids[index];
-        jQuery.post(BuyMeABeer.pluginsUrl+'/admin/ajax/formHandler.php', {
+        jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
                 action: "deleteDescription",
                 id: id
             }, function (data) {
@@ -289,7 +289,7 @@ function bmabMultiDeleteDescrips(ids) {
     bmabPage("bmabDescriptions");
 }
 function bmabDeleteDescription(id) {
-    jQuery.post(BuyMeABeer.pluginsUrl+'/admin/ajax/formHandler.php', {
+    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
             action: "deleteDescription",
             id: id
         }, function (data) {
@@ -301,7 +301,7 @@ function bmabDeleteDescription(id) {
 function bmabAddPQ() {
     var name = jQuery('#newPQName').val();
     var price = jQuery('#newPQPrice').val();
-    jQuery.post(BuyMeABeer.pluginsUrl+'/admin/ajax/formHandler.php', {
+    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
             action: "addPQ",
             name: name,
             price: price
@@ -312,7 +312,7 @@ function bmabAddPQ() {
     );
 }
 function bmabLoadPQ(action, id) {
-    jQuery.post(BuyMeABeer.pluginsUrl+'/admin/ajax/contentHandler.php', {
+    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/contentHandler.php', {
             action: action,
             id: id
         }, function (data) {
@@ -327,7 +327,7 @@ function bmabEditPQ() {
     var id = jQuery("#editPQId").val();
     var name = jQuery('#editPQName').val();
     var price = jQuery('#editPQPrice').val();
-    jQuery.post(BuyMeABeer.pluginsUrl+'/admin/ajax/formHandler.php', {
+    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
             action: "editPQ",
             id: id,
             name: name,
@@ -342,7 +342,7 @@ function bmabMultiDeletePQs(ids) {
     var index;
     for (index = 0; index < ids.length; ++index) {
         id = ids[index];
-        jQuery.post(BuyMeABeer.pluginsUrl+'/admin/ajax/formHandler.php', {
+        jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
                 action: "deletePQ",
                 id: id
             }, function (data) {
@@ -353,7 +353,7 @@ function bmabMultiDeletePQs(ids) {
     bmabPage("bmabPQ");
 }
 function bmabDeletePQ(id) {
-    jQuery.post(BuyMeABeer.pluginsUrl+'/admin/ajax/formHandler.php', {
+    jQuery.post(BuyMeABeer.pluginsUrl + '/admin/ajax/formHandler.php', {
             action: "deletePQ",
             id: id
         }, function (data) {
