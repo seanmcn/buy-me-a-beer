@@ -1,5 +1,5 @@
 <!-- Todo Sean: Fix path -->
-<form method="POST" action="<?php echo plugins_url( 'public/ajax/formHandler.php', __DIR__ ); ?>">
+<form method="POST">
 	<div class="bmabWrapper">
 		<div class="bmabImage">
 			<img src="<?php echo $image; ?>"/>

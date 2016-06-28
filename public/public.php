@@ -32,9 +32,14 @@ class BuyMeABeerPublic {
 		if ( ! is_home() ) {
 
 			wp_register_script( 'bmabJs', plugins_url( 'public/js/main.js', __DIR__ ), array( 'jquery' ) );
+
+			wp_localize_script( 'bmabJs', 'BuyMeABeer', array(
+				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			) );
+
 			wp_enqueue_script( 'bmabJs' );
 
-			wp_register_style( 'bmabCss', plugins_url( '/buymeabeer/public/css/main.css', __DIR__ ) );
+			wp_register_style( 'bmabCss', plugins_url( 'public/css/main.css', __DIR__ ) );
 			wp_enqueue_style( 'bmabCss' );
 
 			$postId = get_the_ID();

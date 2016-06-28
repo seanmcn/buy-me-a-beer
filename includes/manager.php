@@ -36,6 +36,7 @@ class BuyMeABeer {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/admin.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/ajax.php';
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/public.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/ajax.php';
 		require_once plugin_dir_path( __FILE__ ) . 'loader.php';
 		$this->loader = new BuyMeABeerLoader();
 	}
@@ -51,10 +52,16 @@ class BuyMeABeer {
 		$this->loader->addAction( 'add_meta_boxes', $admin, 'addPostWidget' );
 		$this->loader->addAction( 'save_post', $admin, 'savePostWidget' );
 
-		// Ajax Calls
-		$ajax = new BuyMeABeerAdminAjax( $admin );
-		$this->loader->addAction( 'wp_ajax_bmab_formHandler', $ajax, 'formHandler' );
-		$this->loader->addAction( 'wp_ajax_bmab_contentHandler', $ajax, 'contentHandler' );
+		// Back-end Ajax Calls
+		$adminAjax = new BuyMeABeerAdminAjax( $admin );
+		$this->loader->addAction( 'wp_ajax_bmab_formHandler', $adminAjax, 'formHandler' );
+		$this->loader->addAction( 'wp_ajax_bmab_contentHandler', $adminAjax, 'contentHandler' );
+
+		// Front-end Ajax Calls
+		$publicAjax = new BuyMeABeerPublicAjax();
+		$this->loader->addAction( 'wp_ajax_bmab_publicFormHandler', $publicAjax, 'formHandler' );
+		$this->loader->addAction( 'wp_ajax_nopriv_bmab_publicFormHandler', $publicAjax, 'formHandler' );
+
 	}
 
 	/**

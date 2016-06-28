@@ -343,9 +343,9 @@ class BuyMeABeerAdmin {
 				'jquery',
 				'bmabNoty'
 			) );
-		wp_localize_script( 'bmabAdminJs', 'BuyMeABeer', array(
-			'pluginsUrl' => plugins_url( '', __DIR__ ),
-		) );
+//		wp_localize_script( 'bmabAdminJs', 'BuyMeABeer', array(
+//			'pluginsUrl' => plugins_url( '', __DIR__ ),
+//		) );
 
 		wp_enqueue_script( 'bmabAdminJs' );
 

@@ -1,6 +1,6 @@
 <?php
 require_once( plugin_dir_path( __DIR__ ) . "includes/config.php" );
-require_once( plugin_dir_path( __DIR__ ) . "payment_services/paypal.php" );
+//require_once( plugin_dir_path( __DIR__ ) . "payment_services/paypal.php" );
 /**
  * Class BuyMeABeerAdminAjax
  */

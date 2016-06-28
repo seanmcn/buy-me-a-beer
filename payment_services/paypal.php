@@ -62,8 +62,8 @@ class BuyMeABeerPaypal {
 		$auth           = $this->paypalClientId . ':' . $this->paypalSecret;
 		$curlResult     = $this->curlPost( $curlHeaders, $auth, '/v1/payments/payment', $paymentJsonObject );
 		$paypalApproval = $curlResult['links'][1]['href'];
-		wp_redirect( $paypalApproval . "&useraction=commit" );
-		exit;
+		return $paypalApproval . "&useraction=commit";
+//		exit;
 	}
 
 	/**
