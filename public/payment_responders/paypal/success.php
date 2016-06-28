@@ -1,6 +1,5 @@
 <?php
-//require_once( "../../../../../wp-load.php" );
-require_once( plugin_dir_path( __DIR__ ) . "public/paypal.php" );
+require_once( plugin_dir_path( __DIR__ ) . "payment_services/paypal.php" );
 
 if ( $_REQUEST ) {
 
@@ -11,4 +10,3 @@ if ( $_REQUEST ) {
 	$paypal = new BuyMeABeerPaypal();
 	$paypal->executePayment( $paymentId, $payerId );
 }
-?>

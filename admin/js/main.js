@@ -83,7 +83,7 @@ jQuery(document).ready(function ($) {
     });
 });
 function bmabAction(action) {
-    console.log("bmabAction:: "+action);
+    console.log("bmabAction:: " + action);
     if (action == "settings") {
         bmabSaveSettings();
     }

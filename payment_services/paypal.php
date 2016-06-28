@@ -1,8 +1,14 @@
 <?php
 require_once( plugin_dir_path( __DIR__ ) . "includes/config.php" );
 
+/**
+ * Class BuyMeABeerPaypal
+ */
 class BuyMeABeerPaypal {
 
+	/**
+	 * BuyMeABeerPaypal constructor.
+	 */
 	public function __construct() {
 		$paypalMode                  = get_option( 'bmabPaypalMode', 'sandbox' );
 		$this->paypalApi             = $paypalMode === 'live' ? "api.paypal.com" : "api.sandbox.paypal.com";
@@ -13,6 +19,10 @@ class BuyMeABeerPaypal {
 		$this->paypalConsentEndpoint = "/webapps/auth/protocol/openidconnect/v1/authorize";
 	}
 
+	/**
+	 * @param $descriptionId
+	 * @param $selectedPQ
+	 */
 	public function createPayment( $descriptionId, $selectedPQ ) {
 		global $wpdb;
 
@@ -44,8 +54,8 @@ class BuyMeABeerPaypal {
 			'description' => "$priceName for $blogName"
 		);
 		$paymentObject['redirect_urls']           = array(
-			'return_url' => plugins_url('public/ajax/paypalReturn.php', __DIR__),
-			'cancel_url' => plugins_url('public/ajax/paypalCancel.php', __DIR__),
+			'return_url' => plugins_url( 'public/payment_responders/paypal/success.php', __DIR__ ),
+			'cancel_url' => plugins_url( 'public/payment_responders/paypal/cancel.php', __DIR__ ),
 		);
 		$paymentJsonObject                        = json_encode( $paymentObject );
 
@@ -56,6 +66,10 @@ class BuyMeABeerPaypal {
 		exit;
 	}
 
+	/**
+	 * @param $paymentId
+	 * @param $payerId
+	 */
 	public function executePayment( $paymentId, $payerId ) {
 		$accessToken = $this->getToken();
 		$curlHeaders = array(
@@ -89,6 +103,9 @@ class BuyMeABeerPaypal {
 		}
 	}
 
+	/**
+	 * @param $params
+	 */
 	public function savePayment( $params ) {
 		global $wpdb;
 		$paymentsTable = $wpdb->prefix . PAYMENTS_TABLE;
@@ -109,6 +126,9 @@ class BuyMeABeerPaypal {
 		return;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function getToken() {
 		$curlHeaders = array(
 			'Accept: application/json',
@@ -127,6 +147,14 @@ class BuyMeABeerPaypal {
 		return $accessToken;
 	}
 
+	/**
+	 * @param $headers
+	 * @param null $auth
+	 * @param $endPoint
+	 * @param $postFields
+	 *
+	 * @return array|bool|mixed|object
+	 */
 	public function curlPost( $headers, $auth = null, $endPoint, $postFields ) {
 		$curl        = curl_init();
 		$curlOptions = array(

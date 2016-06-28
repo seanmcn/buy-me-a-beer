@@ -52,7 +52,7 @@ class BuyMeABeer {
 		$this->loader->addAction( 'save_post', $admin, 'savePostWidget' );
 
 		// Ajax Calls
-		$ajax = new BuyMeABeerAjax($admin);
+		$ajax = new BuyMeABeerAdminAjax( $admin );
 		$this->loader->addAction( 'wp_ajax_bmab_formHandler', $ajax, 'formHandler' );
 		$this->loader->addAction( 'wp_ajax_bmab_contentHandler', $ajax, 'contentHandler' );
 	}

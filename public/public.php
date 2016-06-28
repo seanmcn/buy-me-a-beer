@@ -1,16 +1,33 @@
 <?php
 require_once( plugin_dir_path( __DIR__ ) . "includes/config.php" );
 
+/**
+ * Class BuyMeABeerPublic
+ */
 class BuyMeABeerPublic {
+
+	/**
+	 * @var float
+	 */
 	private $version;
 
 	// public $currencyMappings = $currencyMappings;
 
+	/**
+	 * BuyMeABeerPublic constructor.
+	 *
+	 * @param $version
+	 */
 	public function __construct( $version ) {
 		$this->version      = $version;
 		$this->bmabCurrency = get_option( 'bmabCurrency', 'USD' );
 	}
 
+	/**
+	 * @param $content
+	 *
+	 * @return string
+	 */
 	public function displayPostWidget( $content ) {
 		if ( ! is_home() ) {
 
@@ -52,6 +69,11 @@ class BuyMeABeerPublic {
 
 	}
 
+	/**
+	 * @param integer $id
+	 *
+	 * @return array|null|object|void
+	 */
 	function getDescription( $id ) {
 		global $wpdb;
 		$table       = $wpdb->prefix . DESCRIPTIONS_TABLE;
@@ -60,6 +82,9 @@ class BuyMeABeerPublic {
 		return $description;
 	}
 
+	/**
+	 * @return array|null|object|void
+	 */
 	function getDefaultDescription() {
 		global $wpdb;
 		$table       = $wpdb->prefix . DESCRIPTIONS_TABLE;
@@ -68,6 +93,9 @@ class BuyMeABeerPublic {
 		return $description;
 	}
 
+	/**
+	 * @return array|null|object
+	 */
 	function getPQs() {
 		global $wpdb;
 		$table = $wpdb->prefix . PRICEQUANITY_TABLE;
@@ -79,6 +107,11 @@ class BuyMeABeerPublic {
 		return $pqs;
 	}
 
+	/**
+	 * @param $value
+	 *
+	 * @return string
+	 */
 	function formatAsCurrency( $value ) {
 		global $currencyMappings;
 		$currency = $this->bmabCurrency;
