@@ -178,15 +178,19 @@ function bmabContentHandler(action, content) {
         jQuery("#bmabPaymentsContent").empty();
         jQuery.each(content, function (index, value) {
             var bmabHtml = '<tr>' +
-                    '<td>' + value.paypal_id + '</td>' +
-                    '<td>' + value.amount + '</td>' +
-                    '<td>' + value.email + '</td>' +
-                    '<td>' + value.first_name + ' ' + value.last_name + '</td>' +
-                    '<td>' + value.time + '</td>' +
-                    '<td>' + value.linkedFrom + '</td>' +
-                    '<td>' + value.descriptionTitle + '</td>' +
-                    '</tr>'
-                ;
+                '<td>' + value.paypal_id + '</td>' +
+                '<td>' + BuyMeABeer.currencyPre + value.amount + BuyMeABeer.currencyPost + '</td>' +
+                '<td>' + value.email + '</td>' +
+                '<td>' + value.first_name + ' ' + value.last_name + '</td>' +
+                '<td>' + value.time + '</td>';
+            if(value.url !== undefined && !!value.url) {
+                bmabHtml += '<td><a href="' + value.url + '" target="_blank">' + value.url + '</a></td>';
+            } else {
+                bmabHtml += '<td>Unknown URL</td>';
+            }
+            bmabHtml += '<td>' + value.title + '</td>' +
+                '</tr>'
+            ;
             jQuery(bmabHtml).appendTo("#bmabPaymentsContent");
         });
     }

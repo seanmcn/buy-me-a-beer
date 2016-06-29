@@ -243,7 +243,8 @@ class BuyMeABeerAdmin {
 	public function getPayments() {
 		global $wpdb;
 		$table    = $wpdb->prefix . PAYMENTS_TABLE;
-		$payments = $wpdb->get_results( "SELECT * FROM $table" );
+		$descripTable = $wpdb->prefix. DESCRIPTIONS_TABLE;
+		$payments = $wpdb->get_results( "SELECT * FROM $table LEFT JOIN $descripTable ON $table.description_id=$descripTable.id" );
 
 		/* Format the $payments['linkedFrom'] & $payments['descriptionTitle'] here */
 		$json = json_encode( $payments );
@@ -317,6 +318,7 @@ class BuyMeABeerAdmin {
 	}
 
 	public function adminEnqueueScripts() {
+		global $currencyMappings;
 		/* Admin JS gets loaded here */
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'thickbox' );
@@ -343,9 +345,13 @@ class BuyMeABeerAdmin {
 				'jquery',
 				'bmabNoty'
 			) );
-//		wp_localize_script( 'bmabAdminJs', 'BuyMeABeer', array(
-//			'pluginsUrl' => plugins_url( '', __DIR__ ),
-//		) );
+		$currency = $this->bmabCurrency;
+		$currencyPre = $currencyMappings[ $currency ]['pre'];
+		$currencyPost = $currencyMappings[ $currency ]['post'];
+		wp_localize_script( 'bmabAdminJs', 'BuyMeABeer', array(
+			'currencyPre' =>  $currencyPre,
+			'currencyPost' => $currencyPost
+		) );
 
 		wp_enqueue_script( 'bmabAdminJs' );
 

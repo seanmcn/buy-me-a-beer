@@ -6,11 +6,11 @@ define( 'PRICEQUANITY_TABLE', "buymeabeer_pqs" );
 global $currencyMappings;
 $currencyMappings = array(
 	"AUD" => array(
-		"pre"  => "&#36; ",
+		"pre"  => "&#36;",
 		"post" => " AUD"
 	),
 	"CAD" => array(
-		"pre"  => "&#36; ",
+		"pre"  => "&#36;",
 		"post" => " CAD"
 	),
 	"EUR" => array(
@@ -18,11 +18,11 @@ $currencyMappings = array(
 		"post" => " EUR"
 	),
 	"HKD" => array(
-		"pre"  => "&#36; ",
+		"pre"  => "&#36;",
 		"post" => " HKD"
 	),
 	"NZD" => array(
-		"pre"  => "&#36; ",
+		"pre"  => "&#36;",
 		"post" => " NZD"
 	),
 	"NOK" => array(
@@ -30,7 +30,7 @@ $currencyMappings = array(
 		"post" => " NOK"
 	),
 	"GBP" => array(
-		"pre"  => "&#163; ",
+		"pre"  => "&#163;",
 		"post" => " GBP"
 	),
 	"SEK" => array(
