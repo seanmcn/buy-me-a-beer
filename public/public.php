@@ -124,4 +124,10 @@ class BuyMeABeerPublic {
 
 		return $newValue;
 	}
+
+	public function session() {
+		if ( ! session_id() ) {
+			session_start();
+		}
+	}
 }

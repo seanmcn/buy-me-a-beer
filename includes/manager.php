@@ -57,11 +57,6 @@ class BuyMeABeer {
 		$this->loader->addAction( 'wp_ajax_bmab_formHandler', $adminAjax, 'formHandler' );
 		$this->loader->addAction( 'wp_ajax_bmab_contentHandler', $adminAjax, 'contentHandler' );
 
-		// Front-end Ajax Calls
-		$publicAjax = new BuyMeABeerPublicAjax();
-		$this->loader->addAction( 'wp_ajax_bmab_publicFormHandler', $publicAjax, 'formHandler' );
-		$this->loader->addAction( 'wp_ajax_nopriv_bmab_publicFormHandler', $publicAjax, 'formHandler' );
-
 	}
 
 	/**
@@ -70,6 +65,15 @@ class BuyMeABeer {
 	private function definePublicHooks() {
 		$public = new BuyMeABeerPublic( $this->getVersion() );
 		$this->loader->addAction( 'the_content', $public, 'displayPostWidget' );
+
+		// Start session
+		$this->loader->addAction( 'init', $public, 'session' );
+
+		// Front-end Ajax Calls
+		$publicAjax = new BuyMeABeerPublicAjax();
+		$this->loader->addAction( 'wp_ajax_bmab_publicFormHandler', $publicAjax, 'formHandler' );
+		$this->loader->addAction( 'wp_ajax_nopriv_bmab_publicFormHandler', $publicAjax, 'formHandler' );
+
 	}
 
 	/**

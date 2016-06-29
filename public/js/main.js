@@ -6,14 +6,13 @@ jQuery(document).ready(function ($) {
         var bmabDescriptionId = $('#bmabDescriptionId').val();
         var bmabOption = $('#bmabOption').val();
 
-        console.log("DescriptionId", bmabDescriptionId);
-        console.log("Option", bmabOption);
-
         jQuery.post(BuyMeABeer.ajaxUrl, {
                 action: "bmab_publicFormHandler",
                 bmabDescriptionId: bmabDescriptionId,
-                bmabOption: bmabOption
+                bmabOption: bmabOption,
+                bmabLocation: window.location.href
             }, function (data) {
+                window.location = data;
                 console.log(data);
             }, "JSON"
         );

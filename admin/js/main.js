@@ -174,11 +174,12 @@ function bmabContentHandler(action, content) {
         });
     }
     if (action == 'bmabPayments') {
+        // Todo Sean: add currency to amount
         jQuery("#bmabPaymentsContent").empty();
         jQuery.each(content, function (index, value) {
             var bmabHtml = '<tr>' +
                     '<td>' + value.paypal_id + '</td>' +
-                    '<td>' + value.price + '</td>' +
+                    '<td>' + value.amount + '</td>' +
                     '<td>' + value.email + '</td>' +
                     '<td>' + value.first_name + ' ' + value.last_name + '</td>' +
                     '<td>' + value.time + '</td>' +

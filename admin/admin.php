@@ -290,8 +290,8 @@ class BuyMeABeerAdmin {
 		last_name varchar(300),
 		address text,
 		payment_method varchar(300),
-		post_id int(100),
 		description_id int(100),
+		url text,
 		time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
 		UNIQUE KEY id (id)
 	) $charset_collate;";

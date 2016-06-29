@@ -19,11 +19,15 @@ class BuyMeABeerPaypal {
 		$this->paypalConsentEndpoint = "/webapps/auth/protocol/openidconnect/v1/authorize";
 	}
 
+
 	/**
 	 * @param $descriptionId
 	 * @param $selectedPQ
+	 * @param $location
+	 *
+	 * @return string
 	 */
-	public function createPayment( $descriptionId, $selectedPQ ) {
+	public function createPayment( $descriptionId, $selectedPQ, $location ) {
 		global $wpdb;
 
 		$pqTable = $wpdb->prefix . PRICEQUANITY_TABLE;
@@ -51,25 +55,36 @@ class BuyMeABeerPaypal {
 					'shipping' => '0.00',
 				)
 			),
-			'description' => "$priceName for $blogName"
+			'description' => "$priceName for $blogName",
 		);
-		$paymentObject['redirect_urls']           = array(
-			'return_url' => plugins_url( 'public/payment_responders/paypal/success.php', __DIR__ ),
+
+		// Implode data we want Paypal to send back to us to store with payment
+		$sendBack               = array(
+			'descriptionId' => $descriptionId,
+			'url'           => $location
+		);
+		$_SESSION['bmabPaypal'] = $sendBack;
+
+		$paymentObject['redirect_urls'] = array(
+			'return_url' => plugins_url( 'public/payment_responders/paypal/success.php?custom=' . $sendBack, __DIR__ ),
 			'cancel_url' => plugins_url( 'public/payment_responders/paypal/cancel.php', __DIR__ ),
 		);
-		$paymentJsonObject                        = json_encode( $paymentObject );
+		$paymentJsonObject              = json_encode( $paymentObject );
 
 		$auth           = $this->paypalClientId . ':' . $this->paypalSecret;
 		$curlResult     = $this->curlPost( $curlHeaders, $auth, '/v1/payments/payment', $paymentJsonObject );
 		$paypalApproval = $curlResult['links'][1]['href'];
+
 		return $paypalApproval . "&useraction=commit";
 	}
+
 
 	/**
 	 * @param $paymentId
 	 * @param $payerId
+	 * @param $data
 	 */
-	public function executePayment( $paymentId, $payerId ) {
+	public function executePayment( $paymentId, $payerId, $data ) {
 		$accessToken = $this->getToken();
 		$curlHeaders = array(
 			'Content-Type: application/json',
@@ -78,27 +93,29 @@ class BuyMeABeerPaypal {
 
 		$curlResult = $this->curlPost( $curlHeaders, null, '/v1/payments/payment/' . $paymentId . '/execute/',
 			json_encode( array( 'payer_id' => $payerId ) ) );
-
-		if ( $curlResult['state'] == 'approved' ) {
+		if ( array_key_exists( 'state', $curlResult ) && $curlResult['state'] == 'approved' ) {
 			$params['paymentId']            = $curlResult['id'];
 			$params['payerEmail']           = $curlResult['payer']['payer_info']['email'];
-			$params['payerFirstName']       = $curlResult['payer']['payer_info']['first_/name'];
+			$params['payerFirstName']       = $curlResult['payer']['payer_info']['first_name'];
 			$params['payerLastName']        = $curlResult['payer']['payer_info']['last_name'];
 			$params['payerShippingAddress'] = $curlResult['payer']['payer_info']['shipping_address']; //array;
 			$params['payerPaymentMethod']   = $curlResult['payer']['payment_method'];
 
+			// Work out the total paid
 			$total = 0;
 			foreach ( $curlResult['transactions'] as $transaction ) {
 				$total = $total + $transaction['amount']['total'];
 			}
 			$params['payerPaymentTotal'] = $total;
+			$params['url']               = $data['url'];
+			$params['descriptionId']     = $data['descriptionId'];
 
 			$this->savePayment( $params );
 			//Todo Sean: Thank you page ->
-			//wp_redirect( home_url() . '/thank-you' );
+			wp_redirect( home_url() . '/bmab-success' );
 		} else {
 			//Todo Sean : Payment Failed page ->
-			// wp_redirect( home_url() . '/payment-failed' );
+			wp_redirect( home_url() . '/bmab-failure' );
 		}
 	}
 
@@ -115,10 +132,12 @@ class BuyMeABeerPaypal {
 				'email'          => $params['payerEmail'],
 				'first_name'     => $params['payerFirstName'],
 				'last_name'      => $params['payerLastName'],
-				'address'        => $params['payerShippingAddress'],
+				'address'        => json_encode( $params['payerShippingAddress'] ),
 				'payment_method' => $params['payerPaymentMethod'],
 				'time'           => current_time( 'mysql' ),
-				'amount'         => $params['payerPaymentsTotal']
+				'amount'         => $params['payerPaymentTotal'],
+				'description_id' => $params['descriptionId'],
+				'url'            => $params['url']
 			)
 		);
 
