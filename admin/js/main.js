@@ -209,7 +209,7 @@ function bmabSaveSettings() {
     var paypalSecret = jQuery('#paypalSecret').val();
     var currency = jQuery('#bmabCurrency').find('option:selected').attr('id');
     jQuery.post(ajaxurl, {
-            action: "bamb_formHandler",
+            action: "bmab_formHandler",
             run: "saveSettings",
             paypalEmail: paypalEmail,
             paypalMode: paypalMode,
