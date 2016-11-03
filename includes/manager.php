@@ -64,7 +64,12 @@ class BuyMeABeer {
 	 */
 	private function definePublicHooks() {
 		$public = new BuyMeABeerPublic( $this->getVersion() );
+
+		// Auto post/page widget
 		$this->loader->addAction( 'the_content', $public, 'displayPostWidget' );
+
+		// Manual shortcode widget
+		$this->loader->addShortCode('bmab_widget', $public, 'displayShortCodeWidget');
 
 		// Start session
 		$this->loader->addAction( 'init', $public, 'session' );

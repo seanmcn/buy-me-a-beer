@@ -15,11 +15,17 @@ class BuyMeABeerLoader {
 	protected $filters;
 
 	/**
+	 * @var array
+	 */
+	protected $shortCodes;
+
+	/**
 	 * BuyMeABeerLoader constructor.
 	 */
 	public function __construct() {
-		$this->actions = array();
-		$this->filters = array();
+		$this->actions    = array();
+		$this->filters    = array();
+		$this->shortCodes = array();
 	}
 
 	/**
@@ -38,6 +44,16 @@ class BuyMeABeerLoader {
 	 */
 	public function addFilter( $hook, $component, $callback ) {
 		$this->filters = $this->add( $this->filters, $hook, $component, $callback );
+	}
+
+
+	/**
+	 * @param $hook
+	 * @param $component
+	 * @param $callback
+	 */
+	public function addShortCode( $hook, $component, $callback ) {
+		$this->shortCodes = $this->add( $this->shortCodes, $hook, $component, $callback );
 	}
 
 	/**
@@ -68,6 +84,10 @@ class BuyMeABeerLoader {
 
 		foreach ( $this->actions as $hook ) {
 			add_action( $hook['hook'], array( $hook['component'], $hook['callback'] ) );
+		}
+
+		foreach ( $this->shortCodes as $hook ) {
+			add_shortcode( $hook['hook'], array( $hook['component'], $hook['callback'] ) );
 		}
 	}
 }

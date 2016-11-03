@@ -50,7 +50,7 @@ class BuyMeABeerPublic {
 
 			$descriptionId = get_post_meta( $postId, 'bmabDescriptionId', true );
 			if ( ! is_page() || $bmabMode == 'automatic-all' ) {
-				if ( $bmabActive == 1 && !is_page('bmab-success')) {
+				if ( $bmabActive == 1 && ! is_page( 'bmab-success' ) ) {
 					$pqs = $this->getPQs();
 					if ( $descriptionId !== "" ) {
 						$descriptionFull = $this->getDescription( $descriptionId ) !== null ? $this->getDescription( $descriptionId ) :
@@ -75,6 +75,46 @@ class BuyMeABeerPublic {
 
 		return $content;
 
+	}
+
+	public function displayShortCodeWidget() {
+		if ( ! is_home() ) {
+
+			wp_register_script( 'bmabJs', plugins_url( 'public/js/main.js', __DIR__ ), array( 'jquery' ) );
+
+			wp_localize_script( 'bmabJs', 'BuyMeABeer', array(
+				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			) );
+
+			wp_enqueue_script( 'bmabJs' );
+
+			wp_register_style( 'bmabCss', plugins_url( 'public/css/main.css', __DIR__ ) );
+			wp_enqueue_style( 'bmabCss' );
+
+			$postId        = get_the_ID();
+			$descriptionId = get_post_meta( $postId, 'bmabDescriptionId', true );
+
+			if ( $descriptionId !== "" ) {
+				$descriptionFull = $this->getDescription( $descriptionId ) !== null ? $this->getDescription( $descriptionId ) :
+					$this->getDefaultDescription();
+			} else {
+				$descriptionFull = $this->getDefaultDescription();
+			}
+
+			$pqs         = $this->getPQs();
+			$title       = $descriptionFull->title;
+			$description = $descriptionFull->description;
+			$image       = $descriptionFull->image;
+
+			ob_start();
+			require_once plugin_dir_path( __DIR__ ) . 'public/partials/postWidget.php';
+			$template = ob_get_contents();
+			ob_end_clean();
+
+			return $template;
+		}
+
+		return '';
 	}
 
 	/**
