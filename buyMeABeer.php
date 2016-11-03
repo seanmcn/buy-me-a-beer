@@ -31,7 +31,5 @@ function runBuyMeABeerPlugin() {
 	register_activation_hook( __FILE__, array( $bmab, 'activatePlugin' ) );
 	$bmab->run();
 
-
 }
-
 runBuyMeABeerPlugin();

@@ -49,25 +49,28 @@ class BuyMeABeerPublic {
 			$bmabActive = $bmabMode == 'manual' ? get_post_meta( $postId, 'bmabActive', true ) : 1;
 
 			$descriptionId = get_post_meta( $postId, 'bmabDescriptionId', true );
-			if ( $bmabActive == 1 ) {
-				$pqs = $this->getPQs();
-				if ( $descriptionId !== "" ) {
-					$descriptionFull = $this->getDescription( $descriptionId ) !== null ? $this->getDescription( $descriptionId ) :
-						$this->getDefaultDescription();
-				} else {
-					$descriptionFull = $this->getDefaultDescription();
+			if ( ! is_page() || $bmabMode == 'automatic-all' ) {
+				if ( $bmabActive == 1 && !is_page('bmab-success')) {
+					$pqs = $this->getPQs();
+					if ( $descriptionId !== "" ) {
+						$descriptionFull = $this->getDescription( $descriptionId ) !== null ? $this->getDescription( $descriptionId ) :
+							$this->getDefaultDescription();
+					} else {
+						$descriptionFull = $this->getDefaultDescription();
+					}
+
+					$title       = $descriptionFull->title;
+					$description = $descriptionFull->description;
+					$image       = $descriptionFull->image;
+
+					ob_start();
+					require_once plugin_dir_path( __DIR__ ) . 'public/partials/postWidget.php';
+					$template = ob_get_contents();
+					$content .= $template;
+					ob_end_clean();
 				}
-
-				$title       = $descriptionFull->title;
-				$description = $descriptionFull->description;
-				$image       = $descriptionFull->image;
-
-				ob_start();
-				require_once plugin_dir_path( __DIR__ ) . 'public/partials/postWidget.php';
-				$template = ob_get_contents();
-				$content .= $template;
-				ob_end_clean();
 			}
+
 		}
 
 		return $content;

@@ -50,6 +50,11 @@
 						}
 						?>>Automatic (Display on all posts)
 						</option>
+						<option id="automatic-all" value="automatic-all" <?php if ( $displayMode == 'automatic-all' ) {
+							echo "selected";
+						}
+						?>>Automatic (Display on all posts &amp; pages)
+						</option>
 						<option id="manual" value="manual" <?php if ( $displayMode == 'manual' ) {
 							echo "selected";
 						}
