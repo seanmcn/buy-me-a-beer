@@ -422,7 +422,6 @@
 				<th scope="col" class="manage-column column-title">Name</th>
 				<th scope="col" class="manage-column column-title">Date</th>
 				<th scope="col" class="manage-column column-title">Post Linked From</th>
-				<th scope="col" class="manage-column column-title">Description Title</th>
 			</tr>
 			</thead>
 			<tbody id="bmabPaymentsContent">

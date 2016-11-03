@@ -188,8 +188,8 @@ function bmabContentHandler(action, content) {
             } else {
                 bmabHtml += '<td>Unknown URL</td>';
             }
-            bmabHtml += '<td>' + value.title + '</td>' +
-                '</tr>'
+            // bmabHtml += '<td>' + value.title + '</td>' +
+                bmabHtml += '</tr>'
             ;
             jQuery(bmabHtml).appendTo("#bmabPaymentsContent");
         });

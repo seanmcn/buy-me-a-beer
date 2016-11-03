@@ -91,7 +91,7 @@ class BuyMeABeerPublic {
 			wp_register_style( 'bmabCss', plugins_url( 'public/css/main.css', __DIR__ ) );
 			wp_enqueue_style( 'bmabCss' );
 
-			$postId        = get_the_ID();
+			$postId = get_the_ID();
 			$descriptionId = get_post_meta( $postId, 'bmabDescriptionId', true );
 
 			if ( $descriptionId !== "" ) {
@@ -101,7 +101,7 @@ class BuyMeABeerPublic {
 				$descriptionFull = $this->getDefaultDescription();
 			}
 
-			$pqs         = $this->getPQs();
+
 			$title       = $descriptionFull->title;
 			$description = $descriptionFull->description;
 			$image       = $descriptionFull->image;
@@ -113,7 +113,6 @@ class BuyMeABeerPublic {
 
 			return $template;
 		}
-
 		return '';
 	}
 
