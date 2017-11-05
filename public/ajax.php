@@ -8,19 +8,19 @@ require_once( plugin_dir_path( __DIR__ ) . "payment_services/paypal.php" );
 class BuyMeABeerPublicAjax {
 
 	function formHandler() {
-		$descriptionId  = isset( $_REQUEST['bmabDescriptionId'] ) ? (int) $_REQUEST['bmabDescriptionId'] : null;
-		$selectedOption = isset( $_REQUEST['bmabOption'] ) ? (int) $_REQUEST['bmabOption'] : null;
+		$widgetId = isset( $_REQUEST['bmabWidgetId'] ) ? (int) $_REQUEST['bmabWidgetId'] : null;
+		$itemId   = isset( $_REQUEST['bmabItemId'] ) ? (int) $_REQUEST['bmabItemId'] : null;
 		$location = isset( $_REQUEST['bmabLocation'] ) ? $_REQUEST['bmabLocation'] : null;
 
 		//open connection
 		try {
-			if ( $descriptionId !== null && $selectedOption !== null ) {
+			if ( $widgetId !== null && $itemId !== null ) {
 				// Todo Sean: Different payment providers here
 				$paypal = new BuyMeABeerPaypal();
-				echo json_encode( $paypal->createPayment( $descriptionId, $selectedOption, $location ) );
+				echo json_encode( $paypal->createPayment( $widgetId, $itemId, $location ) );
 				wp_die();
 			} else {
-				error_log( "Error: The 'Buy Me A Beer' wp plugin failed to receive a selected option ID and/or description ID" );
+				error_log( "Error: The 'Buy Me A Beer' wp plugin failed to receive a selected item or widget id" );
 			}
 		} catch ( Exception $e ) {
 			error_log( "Error: The 'Buy Me A Beer' wp plugin has encountered an exception while creating a payment with Paypal: " );

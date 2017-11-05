@@ -10,35 +10,25 @@ class BuyMeABeerAdmin {
 		$this->bmabCurrency = get_option( 'bmabCurrency', 'USD' );
 	}
 
-	function getTitlesAndDescriptions() {
-		global $wpdb;
-		$table                 = $wpdb->prefix . DESCRIPTIONS_TABLE;
-		$titlesAndDescriptions = $wpdb->get_results( "SELECT * FROM $table" );
+	function getWidget( $id ) {
+		global $wpdb, $bmabConfig;
+		$table  = $wpdb->prefix . $bmabConfig->tables['widgets'];
+		$widget = $wpdb->get_row( "SELECT * FROM $table WHERE id=$id" );
 
-		return $titlesAndDescriptions;
+		return $widget;
 	}
 
-	function getDescription( $id ) {
-		global $wpdb;
-		$table       = $wpdb->prefix . DESCRIPTIONS_TABLE;
-		$description = $wpdb->get_row( "SELECT * FROM $table WHERE id=$id" );
-		$json        = json_encode( $description );
+	function getWidgets() {
+		global $wpdb, $bmabConfig;
+		$table   = $wpdb->prefix . $bmabConfig->tables['widgets'];
+		$widgets = $wpdb->get_results( "SELECT * FROM $table" );
 
-		return $json;
+		return $widgets;
 	}
 
-	function getDescriptions() {
-		global $wpdb;
-		$table        = $wpdb->prefix . DESCRIPTIONS_TABLE;
-		$descriptions = $wpdb->get_results( "SELECT * FROM $table" );
-		$json         = json_encode( $descriptions );
-
-		return $json;
-	}
-
-	function addDescription( $title, $description, $image ) {
-		global $wpdb;
-		$table = $wpdb->prefix . DESCRIPTIONS_TABLE;
+	function addWidget( $title, $description, $image ) {
+		global $wpdb, $bmabConfig;
+		$table = $wpdb->prefix . $bmabConfig->tables['widgets'];
 
 		$wpdb->insert(
 			$table,
@@ -58,23 +48,23 @@ class BuyMeABeerAdmin {
 		$wpdb->query( "SELECT * FROM $table WHERE default_option='1'" );
 		if ( $wpdb->num_rows == 0 ) {
 			$id = $wpdb->insert_id;
-			$this->makeDefaultPQ( $id );
+			$this->makeDefaultWidget( $id );
 		}
 
 		return true;
 	}
 
-	function makeDefaultPQ( $id ) {
-		global $wpdb;
-		$table = $wpdb->prefix . DESCRIPTIONS_TABLE;
+	function makeDefaultWidget( $id ) {
+		global $wpdb, $bmabConfig;
+		$table = $wpdb->prefix . $bmabConfig->tables['widgets'];
 
 		//Check if there is a default and remove it first
-		$currentDefault = $wpdb->query( "SELECT * FROM $table WHERE default_option='1'" );
+		$currentDefault = $wpdb->query( "SELECT * FROM $table WHERE default_option" );
 		if ( $wpdb->num_rows != 0 ) {
 			$currentDefaultId = $currentDefault['id'];
 			$wpdb->update( $table,
 				array(
-					'default_option' => 0,
+					'is_default' => 0,
 				),
 				array(
 					'id' => $currentDefaultId
@@ -88,7 +78,7 @@ class BuyMeABeerAdmin {
 		// Update the new default
 		$wpdb->update( $table,
 			array(
-				'default_option' => 1,
+				'is_default' => 1,
 			),
 			array(
 				'id' => $id
@@ -101,9 +91,9 @@ class BuyMeABeerAdmin {
 
 	}
 
-	function updateDescription( $id, $title, $description, $image ) {
-		global $wpdb;
-		$table = $wpdb->prefix . DESCRIPTIONS_TABLE;
+	function updateWidget( $id, $title, $description, $image ) {
+		global $wpdb, $bmabConfig;
+		$table = $wpdb->prefix . $bmabConfig->tables['widgets'];
 
 		$wpdb->update( $table,
 			array(
@@ -125,35 +115,32 @@ class BuyMeABeerAdmin {
 		return true;
 	}
 
-	function deleteDescription( $id ) {
-		global $wpdb;
-		$table = $wpdb->prefix . DESCRIPTIONS_TABLE;
+	function deleteWidget( $id ) {
+		global $wpdb, $bmabConfig;
+		$table = $wpdb->prefix . $bmabConfig->tables['widgets'];
 		$wpdb->delete( $table, array( 'id' => $id ), array( '%d' ) );
 
 		return true;
 	}
 
-	function getPQ( $id ) {
-		global $wpdb;
-		$table       = $wpdb->prefix . PRICEQUANITY_TABLE;
+	function getItem( $id ) {
+		global $wpdb, $bmabConfig;
+		$table       = $wpdb->prefix . $bmabConfig->tables['items'];
 		$description = $wpdb->get_row( "SELECT * FROM $table WHERE id=$id" );
-		$json        = json_encode( $description );
 
-		return $json;
+		return $description;
 	}
 
-	function getPQs() {
-		global $wpdb;
-		$table = $wpdb->prefix . PRICEQUANITY_TABLE;
-		$pqs   = $wpdb->get_results( "SELECT * FROM $table" );
+	function getItems() {
+		global $wpdb, $bmabConfig;
+		$table = $wpdb->prefix . $bmabConfig->tables['items'];
+		$items = $wpdb->get_results( "SELECT * FROM $table" );
 
-		foreach ( $pqs as $key => $value ) {
-			$pqs[ $key ]->price = $this->formatAsCurrency( $value->price );
+		foreach ( $items as $key => $value ) {
+			$items[ $key ]->price = $this->formatAsCurrency( $value->price );
 		}
 
-		$json = json_encode( $pqs );
-
-		return $json;
+		return $items;
 	}
 
 	function formatAsCurrency( $value ) {
@@ -164,9 +151,9 @@ class BuyMeABeerAdmin {
 		return $newValue;
 	}
 
-	function addPQ( $name, $price ) {
-		global $wpdb;
-		$table = $wpdb->prefix . PRICEQUANITY_TABLE;
+	function addItem( $name, $price ) {
+		global $wpdb, $bmabConfig;
+		$table = $wpdb->prefix . $bmabConfig->tables['items'];
 
 		$wpdb->insert( $table,
 			array(
@@ -182,9 +169,9 @@ class BuyMeABeerAdmin {
 		return true;
 	}
 
-	function updatePQ( $id, $name, $price ) {
-		global $wpdb;
-		$table = $wpdb->prefix . PRICEQUANITY_TABLE;
+	function updateItem( $id, $name, $price ) {
+		global $wpdb, $bmabConfig;
+		$table = $wpdb->prefix . $bmabConfig->tables['items'];
 
 		$wpdb->update( $table,
 			array(
@@ -206,9 +193,9 @@ class BuyMeABeerAdmin {
 		return true;
 	}
 
-	function deletePQ( $id ) {
-		global $wpdb;
-		$table = $wpdb->prefix . PRICEQUANITY_TABLE;
+	function deleteItem( $id ) {
+		global $wpdb, $bmabConfig;
+		$table = $wpdb->prefix . $bmabConfig->tables['items'];
 		$wpdb->delete( $table, array( 'id' => $id ), array( '%d' ) );
 
 		return true;
@@ -252,73 +239,96 @@ class BuyMeABeerAdmin {
 	}
 
 	public function getPayments() {
-		global $wpdb;
-		$table    = $wpdb->prefix . PAYMENTS_TABLE;
-		$descripTable = $wpdb->prefix. DESCRIPTIONS_TABLE;
-		$payments = $wpdb->get_results( "SELECT * FROM $table LEFT JOIN $descripTable ON $table.description_id=$descripTable.id" );
+		global $wpdb, $bmabConfig;
+		$paymentTable = $wpdb->prefix . $bmabConfig->tables['payments'];
+		$widgetTable  = $wpdb->prefix . $bmabConfig->tables['widgets'];
+		$payments     = $wpdb->get_results( "SELECT * FROM $paymentTable LEFT JOIN $widgetTable ON $paymentTable.widget_id=$widgetTable.id" );
 
-		/* Format the $payments['linkedFrom'] & $payments['descriptionTitle'] here */
-		$json = json_encode( $payments );
-
-		return $json;
+		return $payments;
 	}
 
 	public function installation() {
-		global $wpdb;
+		global $wpdb, $bmabConfig;
 		global $dbVersion;
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-		$paymentsTable      = $wpdb->prefix . PAYMENTS_TABLE;
-		$priceQuantityTable = $wpdb->prefix . PRICEQUANITY_TABLE;
-		$descriptionsTable  = $wpdb->prefix . DESCRIPTIONS_TABLE;
 
-		$charset_collate = $wpdb->get_charset_collate();
+		$charset = $wpdb->get_charset_collate();
 
-		$priceQuantitySql = "CREATE TABLE $priceQuantityTable (
-		id mediumint(9) NOT NULL AUTO_INCREMENT,
-		name varchar(300),
-		price text,
-		UNIQUE KEY id (id)
-	) $charset_collate;";
+		// Group Table
+		$table = $wpdb->prefix . $bmabConfig->tables['groups'];
+		$sql   = "CREATE TABLE $table (
+			id int NOT NULL AUTO_INCREMENT,
+			name VARCHAR(300),
+			UNIQUE KEY id(id)
+		) $charset;";
 
-		dbDelta( $priceQuantitySql );
+		// Item Table
+		$table = $wpdb->prefix . $bmabConfig->tables['items'];
+		$sql   .= "CREATE TABLE $table (
+			id INT NOT NULL AUTO_INCREMENT,
+			name VARCHAR(300),
+			price INT NOT NULL,
+			UNIQUE KEY id(id)
+		) $charset;";
 
-		$descriptionsSql = "CREATE TABLE $descriptionsTable (
-		id mediumint(9) NOT NULL AUTO_INCREMENT,
-		title varchar(300),
-		description text,
-		image varchar(300),
-		default_option int(1) DEFAULT 0 NOT NULL,
-		UNIQUE KEY id (id)
-	) $charset_collate;";
+		// Item Groups Table
+		$table = $wpdb->prefix . $bmabConfig->tables['item_groups'];
+		$sql   .= "CREATE TABLE $table (
+			item_id INT NOT NULL,
+			group_id INT NOT NULL,
+			PRIMARY KEY(item_id, group_id)
+		) $charset;";
 
-		dbDelta( $descriptionsSql );
+		// Payments Table
+		$table = $wpdb->prefix . $bmabConfig->tables['payments'];
+		$sql   .= "CREATE TABLE $table (
+			id INT NOT NULL AUTO_INCREMENT,
+			paypal_id varchar(300),
+			amount int(100),
+			email varchar(300),
+			first_name varchar(300),
+			last_name varchar(300),
+			address text,
+			payment_method varchar(300),
+			widget_id int(100),
+			url text,
+			time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+			UNIQUE KEY id (id)
+		) $charset;";
 
-		$paymentsSql = "CREATE TABLE $paymentsTable (
-		id mediumint(9) NOT NULL AUTO_INCREMENT,
-		paypal_id varchar(300),
-		amount int(100),
-		email varchar(300),
-		first_name varchar(300),
-		last_name varchar(300),
-		address text,
-		payment_method varchar(300),
-		description_id int(100),
-		url text,
-		time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-		UNIQUE KEY id (id)
-	) $charset_collate;";
+		// Widget Table
+		$table = $wpdb->prefix . $bmabConfig->tables['widgets'];
+		$sql   .= "CREATE TABLE $table (
+			id INT NOT NULL AUTO_INCREMENT,
+			name VARCHAR(300),
+			title VARCHAR(300),
+			description text,
+			image VARCHAR(300),
+			is_default BOOLEAN,
+			UNIQUE KEY id(id)
+		) $charset;";
 
-		dbDelta( $paymentsSql );
+		// Widget Group Table
+		$table = $wpdb->prefix . $bmabConfig->tables['widget_groups'];
+		$sql   .= "CREATE TABLE $table (
+			widget_id INT NOT NULL,
+			group_id INT NOT NULL,
+			PRIMARY KEY(widget_id, group_id)
+		) $charset;";
 
+		// Run queries and store schema version.
+		dbDelta( $sql );
 		add_option( 'bmabDatabaseVersion', $dbVersion );
 
-		$this->addPQ( "1 Beer", 3 );
-		$this->addPQ( "6 Beers", 15 );
-		$this->addPQ( "12 Beers", 25 );
-		$this->addPQ( '36 Beers', 45 );
-		$this->addPQ( "Keg of Beer", 125 );
+		// Seed the database
+		$this->addItem( "1 Beer", 3 );
+		$this->addItem( "6 Beers", 15 );
+		$this->addItem( "12 Beers", 25 );
+		$this->addItem( '36 Beers', 45 );
+		$this->addItem( "Keg of Beer", 125 );
 
-		$this->addDescription( 'Did I help you out?', 'If so how about buying me some beer?', '' );
+		// Todo add group 'Default'
+		$this->addWidget( 'Did I help you out?', 'If so how about buying me some beer?', '' );
 	}
 
 	/**
@@ -408,15 +418,17 @@ class BuyMeABeerAdmin {
 //			$bmabActive = $bmabMode == 'manual' ? get_post_meta($postId, 'bmabActive', true) : 1;
 //		}
 
-		$titlesAndDescriptions = $this->getTitlesAndDescriptions();
+		$bmabWidgets = $this->getWidgets();
 		require_once plugin_dir_path( __FILE__ ) . 'partials/postManager.php';
 	}
 
 	public function savePostWidget( $postId ) {
 		$bmabMode   = get_option( 'bmabDisplayMode', 'automatic' );
-		$option     = isset( $_REQUEST['bmabTitleDescripID'] ) ? $_REQUEST['bmabTitleDescripID'] : null;
 		$bmabActive = isset( $_REQUEST['bmabActive'] ) ? $_REQUEST['bmabActive'] : null;
-		update_post_meta( $postId, 'bmabDescriptionId', $option );
+		$widgetId   = isset( $_REQUEST['bmabWidgetId'] ) ? $_REQUEST['bmabWidgetId'] : null;
+
+		update_post_meta( $postId, 'bmabWidgetId', $widgetId );
+
 		if ( $bmabMode == 'manual' ) {
 			update_post_meta( $postId, 'bmabActive', $bmabActive );
 		}

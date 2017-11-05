@@ -11,8 +11,6 @@ class BuyMeABeerPublic {
 	 */
 	private $version;
 
-	// public $currencyMappings = $currencyMappings;
-
 	/**
 	 * BuyMeABeerPublic constructor.
 	 *
@@ -48,20 +46,25 @@ class BuyMeABeerPublic {
 
 			$bmabActive = $bmabMode == 'manual' ? get_post_meta( $postId, 'bmabActive', true ) : 1;
 
-			$descriptionId = get_post_meta( $postId, 'bmabDescriptionId', true );
+			$widgetId = get_post_meta( $postId, 'bmabItemId', true );
 			if ( ! is_page() || $bmabMode == 'automatic-all' ) {
 				if ( $bmabActive == 1 && ! is_page( 'bmab-success' ) ) {
-					$pqs = $this->getPQs();
-					if ( $descriptionId !== "" ) {
-						$descriptionFull = $this->getDescription( $descriptionId ) !== null ? $this->getDescription( $descriptionId ) :
-							$this->getDefaultDescription();
+
+					// Todo: really? i assume i had some reasoning?
+					if ( $widgetId !== "" ) {
+						$widget = $this->getWidget( $widgetId ) !== null ? $this->getWidget( $widgetId ) :
+							$this->getDefaultWidget();
 					} else {
-						$descriptionFull = $this->getDefaultDescription();
+						$widget = $this->getDefaultWidget();
 					}
 
-					$title       = $descriptionFull->title;
-					$description = $descriptionFull->description;
-					$image       = $descriptionFull->image;
+					// todo : add to only get items for widget
+					$items = $this->getItems();
+
+					$title       = $widget->title;
+					$description = $widget->description;
+					$image       = $widget->image;
+					$widgetId    = $widget->id;
 
 					ob_start();
 					require_once plugin_dir_path( __DIR__ ) . 'public/partials/postWidget.php';
@@ -91,20 +94,22 @@ class BuyMeABeerPublic {
 			wp_register_style( 'bmabCss', plugins_url( 'public/css/main.css', __DIR__ ) );
 			wp_enqueue_style( 'bmabCss' );
 
-			$postId = get_the_ID();
-			$descriptionId = get_post_meta( $postId, 'bmabDescriptionId', true );
+			$postId   = get_the_ID();
+			$widgetId = get_post_meta( $postId, 'bmabItemId', true );
 
-			if ( $descriptionId !== "" ) {
-				$descriptionFull = $this->getDescription( $descriptionId ) !== null ? $this->getDescription( $descriptionId ) :
-					$this->getDefaultDescription();
+			// todo ??? as above
+			if ( $widgetId !== "" ) {
+				$widget = $this->getWidget( $widgetId ) !== null ? $this->getWidget( $widgetId ) :
+					$this->getDefaultWidget();
 			} else {
-				$descriptionFull = $this->getDefaultDescription();
+				$widget = $this->getDefaultWidget();
 			}
 
 
-			$title       = $descriptionFull->title;
-			$description = $descriptionFull->description;
-			$image       = $descriptionFull->image;
+			$title       = $widget->title;
+			$description = $widget->description;
+			$image       = $widget->image;
+			$widgetId    = $widget->id;
 
 			ob_start();
 			require_once plugin_dir_path( __DIR__ ) . 'public/partials/postWidget.php';
@@ -116,42 +121,33 @@ class BuyMeABeerPublic {
 		return '';
 	}
 
-	/**
-	 * @param integer $id
-	 *
-	 * @return array|null|object|void
-	 */
-	function getDescription( $id ) {
-		global $wpdb;
-		$table       = $wpdb->prefix . DESCRIPTIONS_TABLE;
+
+	function getWidget( $id ) {
+		global $wpdb, $bmabConfig;
+		$table       = $wpdb->prefix . $bmabConfig->tables['widgets'];
 		$description = $wpdb->get_row( "SELECT * FROM $table WHERE id=$id" );
+		return $description;
+	}
+
+
+	function getDefaultWidget() {
+		global $wpdb, $bmabConfig;
+		$table       = $wpdb->prefix . $bmabConfig->tables['widgets'];
+		$description = $wpdb->get_row( "SELECT * FROM $table WHERE is_default" );
 
 		return $description;
 	}
 
-	/**
-	 * @return array|null|object|void
-	 */
-	function getDefaultDescription() {
-		global $wpdb;
-		$table       = $wpdb->prefix . DESCRIPTIONS_TABLE;
-		$description = $wpdb->get_row( "SELECT * FROM $table WHERE default_option=1" );
 
-		return $description;
-	}
-
-	/**
-	 * @return array|null|object
-	 */
-	function getPQs() {
-		global $wpdb;
-		$table = $wpdb->prefix . PRICEQUANITY_TABLE;
-		$pqs   = $wpdb->get_results( "SELECT * FROM $table" );
-		foreach ( $pqs as $key => $value ) {
-			$pqs[ $key ]->price = $this->formatAsCurrency( $value->price );
+	function getItems() {
+		global $wpdb, $bmabConfig;
+		$table = $wpdb->prefix . $bmabConfig->tables['items'];
+		$items = $wpdb->get_results( "SELECT * FROM $table" );
+		foreach ( $items as $key => $value ) {
+			$items[ $key ]->price = $this->formatAsCurrency( $value->price );
 		}
 
-		return $pqs;
+		return $items;
 	}
 
 	/**

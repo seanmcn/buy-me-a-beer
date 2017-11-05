@@ -44,7 +44,7 @@ class BuyMeABeerAdminAjax {
 				echo json_encode( $message );
 				break;
 
-			case "addDescription":
+			case "addWidget":
 				$title       = isset( $_REQUEST['title'] ) ? $_REQUEST['title'] : null;
 				$description = isset( $_REQUEST['description'] ) ? $_REQUEST['description'] : null;
 				$image       = isset( $_REQUEST['image'] ) ? $_REQUEST['image'] : null;
@@ -53,13 +53,13 @@ class BuyMeABeerAdminAjax {
 					$error = [ "message" => "Title and Description are required!", "type" => "error" ];
 					echo json_encode( $error );
 				} else {
-					$this->bmabAdmin->addDescription( $title, $description, $image );
-					$message = [ "message" => "'Title / Description' created", "type" => "success" ];
+					$this->bmabAdmin->addWidget( $title, $description, $image );
+					$message = [ "message" => "Widget created", "type" => "success" ];
 					echo json_encode( $message );
 				}
 				break;
 
-			case "editDescription":
+			case "editWidget":
 				$id          = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
 				$title       = isset( $_REQUEST['title'] ) ? $_REQUEST['title'] : null;
 				$description = isset( $_REQUEST['description'] ) ? $_REQUEST['description'] : null;
@@ -69,51 +69,51 @@ class BuyMeABeerAdminAjax {
 					$error = [ "message" => "Title and Description are required!", "type" => "error" ];
 					echo json_encode( $error );
 				} else {
-					$this->bmabAdmin->updateDescription( $id, $title, $description, $image );
-					$message = [ "message" => "'Title / Description' saved!", "type" => "success" ];
+					$this->bmabAdmin->updateWidget( $id, $title, $description, $image );
+					$message = [ "message" => "Widget saved!", "type" => "success" ];
 					echo json_encode( $message );
 				}
 				break;
 
-			case "defaultDescription":
+			case "defaultWidget":
 				$id = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
 
 				if ( $id == null ) {
-					$error = [ "message" => "Error setting default description", "type" => "error" ];
+					$error = [ "message" => "Error setting default widget", "type" => "error" ];
 					echo json_encode( $error );
 				} else {
-					$this->bmabAdmin->makeDefaultPQ( $id );
-					$message = [ "message" => "Default option set!", "type" => "success" ];
+					$this->bmabAdmin->makeDefaultWidget( $id );
+					$message = [ "message" => "Default widget set!", "type" => "success" ];
 					echo json_encode( $message );
 				}
 				break;
 
-			case "deleteDescription":
+			case "deleteWidget":
 				$id = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
 				if ( $id == null ) {
 					$error = [ "message" => "Error", "type" => "error" ];
 					echo json_encode( $error );
 				} else {
-					$this->bmabAdmin->deleteDescription( $id );
-					$message = [ "message" => "'Title / Description' has been deleted!", "type" => "success" ];
+					$this->bmabAdmin->deleteWidget( $id );
+					$message = [ "message" => "Widget has been deleted!", "type" => "success" ];
 					echo json_encode( $message );
 				}
 				break;
 
-			case "addPQ":
+			case "addItem":
 				$name  = isset( $_REQUEST['name'] ) ? $_REQUEST['name'] : null;
 				$price = isset( $_REQUEST['price'] ) ? $_REQUEST['price'] : null;
 				if ( $name == null || $price == null ) {
 					$error = [ "message" => "Name and Price are required!", "type" => "error" ];
 					echo json_encode( $error );
 				} else {
-					$this->bmabAdmin->addPQ( $name, $price );
-					$message = [ "message" => "'Quantity / Price' created", "type" => "success" ];
+					$this->bmabAdmin->addItem( $name, $price );
+					$message = [ "message" => "Item '$name' created", "type" => "success" ];
 					echo json_encode( $message );
 				}
 				break;
 
-			case "editPQ":
+			case "editItem":
 				$id    = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
 				$name  = isset( $_REQUEST['name'] ) ? $_REQUEST['name'] : null;
 				$price = isset( $_REQUEST['price'] ) ? $_REQUEST['price'] : null;
@@ -122,23 +122,23 @@ class BuyMeABeerAdminAjax {
 					$error = [ "message" => "Name and Price are required!", "type" => "error" ];
 					echo json_encode( $error );
 				} else {
-					$this->bmabAdmin->updatePQ( $id, $name, $price );
-					$message = [ "message" => "'Quantity / Price' saved", "type" => "success" ];
+					$this->bmabAdmin->updateItem( $id, $name, $price );
+					$message = [ "message" => "Item '$name' saved", "type" => "success" ];
 					echo json_encode( $message );
 				}
 				break;
 
-			case "deletePQ":
+			case "deleteItem":
 				$id = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
 				if ( $id == null ) {
 					$error = [
-						"message" => "You didn't specify which 'Quantity / Price' to delete",
+						"message" => "You didn't specify which item to delete",
 						"type"    => "error"
 					];
 					echo json_encode( $error );
 				} else {
-					$this->bmabAdmin->deletePQ( $id );
-					$message = [ "message" => "'Quantity / Price' has been deleted!", "type" => "success" ];
+					$this->bmabAdmin->deleteItem( $id );
+					$message = [ "message" => "Item has been deleted!", "type" => "success" ];
 					echo json_encode( $message );
 				}
 				break;
@@ -154,39 +154,35 @@ class BuyMeABeerAdminAjax {
 	function contentHandler() {
 		$action = isset( $_REQUEST['run'] ) ? $_REQUEST['run'] : null;
 
+		$data = [ "message" => "Something went wrong while making your request!", "type" => "error" ];
 		switch ( $action ) {
-			case "bmabPQ":
-				echo $this->bmabAdmin->getPQs();
+			case "bmabViewItems":
+				$data = $this->bmabAdmin->getItems();
 				break;
 
-			case "bmabEditPQ":
+			case "bmabEditItem":
 				$id = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
 				if ( $id !== null ) {
-					echo $this->bmabAdmin->getPQ( $id );
+					$data = $this->bmabAdmin->getItem( $id );
 				}
 				break;
 
-			case "bmabDescriptions":
-				echo $this->bmabAdmin->getDescriptions();
+			case "bmabViewWidgets":
+				$data = $this->bmabAdmin->getWidgets();
 				break;
 
-			case "bmabEditDescription":
+			case "bmabEditWidget":
 				$id = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
 				if ( $id !== null ) {
-					echo $this->bmabAdmin->getDescription( $id );
+					$data = $this->bmabAdmin->getWidget( $id );
 				}
 				break;
 
-			case "bmabPayments":
-				echo $this->bmabAdmin->getPayments();
+			case "bmabViewPayments":
+				$data = $this->bmabAdmin->getPayments();
 				break;
-
-			default :
-				echo "Error: What are you up to?";
-
-				break;
-
 		}
+		echo json_encode( $data );
 		wp_die(); // this is required to terminate immediately and return a proper response
 	}
 }

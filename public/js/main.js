@@ -1,15 +1,15 @@
 jQuery.noConflict();
 jQuery(document).ready(function ($) {
     // var body = ;
-    $('body').on("click", "#bmabBuy", function (e) {
+  $('body').on('click', '#bmabBuyButton', function(e) {
         e.preventDefault();
-        var bmabDescriptionId = $('#bmabDescriptionId').val();
-      var bmabOption = $('#bmabSelect').val();
+    var bmabWidgetId = $('#bmabWidgetId').val();
+    var bmabItemId = $('#bmabItemSelect').val();
 
         jQuery.post(BuyMeABeer.ajaxUrl, {
                 action: "bmab_publicFormHandler",
-                bmabDescriptionId: bmabDescriptionId,
-                bmabOption: bmabOption,
+          bmabWidgetId: bmabWidgetId,
+          bmabItemId: bmabItemId,
                 bmabLocation: window.location.href
             }, function (data) {
                 window.location = data;

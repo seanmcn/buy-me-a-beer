@@ -1,8 +1,20 @@
 <?php
-define( 'DESCRIPTIONS_TABLE', 'buymeabeer_descriptions' );
-define( 'PAYMENTS_TABLE', 'buymeabeer_payments' );
-define( 'PRICEQUANITY_TABLE', "buymeabeer_pqs" );
 
+class BuyMeABeerConfig {
+	public $tables = [
+		'groups'        => 'bmab_groups',
+		'items'         => 'bmab_items',
+		'item_groups'   => 'bmab_item_groups',
+		'payments'      => 'bmab_payments',
+		'widgets'       => 'bmab_widgets',
+		'widget_groups' => 'bmab_widget_groups'
+	];
+}
+
+global $bmabConfig;
+$bmabConfig = new BuyMeABeerConfig();
+
+// Todo: Build from paypal?
 global $currencyMappings;
 $currencyMappings = array(
 	"AUD" => array(
@@ -46,5 +58,5 @@ $currencyMappings = array(
 		"post" => " USD"
 	)
 );
-
+// todo: not even using this wtf?
 //define('CURRENCY_MAPPINGS', json_encode($currencyMappings));

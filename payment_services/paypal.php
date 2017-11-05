@@ -6,9 +6,14 @@ require_once( plugin_dir_path( __DIR__ ) . "includes/config.php" );
  */
 class BuyMeABeerPaypal {
 
-	/**
-	 * BuyMeABeerPaypal constructor.
-	 */
+	protected $paypalApi;
+	protected $paypalAccount;
+	protected $paypalClientId;
+	protected $paypalSecret;
+	protected $bmabCurrency;
+	protected $paypalConsentEndpoint;
+
+
 	public function __construct() {
 		$paypalMode                  = get_option( 'bmabPaypalMode', 'sandbox' );
 		$this->paypalApi             = $paypalMode === 'live' ? "api.paypal.com" : "api.sandbox.paypal.com";
@@ -19,23 +24,14 @@ class BuyMeABeerPaypal {
 		$this->paypalConsentEndpoint = "/webapps/auth/protocol/openidconnect/v1/authorize";
 	}
 
-
-	/**
-	 * @param $descriptionId
-	 * @param $selectedPQ
-	 * @param $location
-	 *
-	 * @return string
-	 */
-	public function createPayment( $descriptionId, $selectedPQ, $location ) {
-		global $wpdb;
-
-		$pqTable = $wpdb->prefix . PRICEQUANITY_TABLE;
-		$pq      = $wpdb->get_row( "SELECT * FROM $pqTable WHERE id=$selectedPQ" );
+	public function createPayment( $widgetId, $itemId, $location ) {
+		global $wpdb, $bmabConfig;
+		$table = $wpdb->prefix . $bmabConfig->tables['items'];
+		$item  = $wpdb->get_row( "SELECT * FROM $table WHERE id=$itemId" );
 
 		$blogName  = get_bloginfo( 'name' );
-		$priceName = $pq->name;
-		$price     = $pq->price;
+		$priceName = $item->name;
+		$price     = $item->price;
 
 		$accessToken                              = $this->getToken();
 		$curlHeaders                              = array(
@@ -60,8 +56,8 @@ class BuyMeABeerPaypal {
 
 		// Implode data we want Paypal to send back to us to store with payment
 		$sendBack               = array(
-			'descriptionId' => $descriptionId,
-			'url'           => $location
+			'widget_id' => $widgetId,
+			'url'       => $location
 		);
 		$_SESSION['bmabPaypal'] = $sendBack;
 
@@ -79,11 +75,6 @@ class BuyMeABeerPaypal {
 	}
 
 
-	/**
-	 * @param $paymentId
-	 * @param $payerId
-	 * @param $data
-	 */
 	public function executePayment( $paymentId, $payerId, $data ) {
 		$accessToken = $this->getToken();
 		$curlHeaders = array(
@@ -108,7 +99,7 @@ class BuyMeABeerPaypal {
 			}
 			$params['payerPaymentTotal'] = $total;
 			$params['url']               = $data['url'];
-			$params['descriptionId']     = $data['descriptionId'];
+			$params['widget_id']         = $data['widget_id'];
 
 			$this->savePayment( $params );
 
@@ -136,14 +127,12 @@ class BuyMeABeerPaypal {
 		}
 	}
 
-	/**
-	 * @param $params
-	 */
+
 	public function savePayment( $params ) {
-		global $wpdb;
-		$paymentsTable = $wpdb->prefix . PAYMENTS_TABLE;
+		global $wpdb, $bmabConfig;
+		$table = $wpdb->prefix . $bmabConfig->tables['payments'];
 		$wpdb->insert(
-			$paymentsTable,
+			$table,
 			array(
 				'paypal_id'      => $params['paymentId'],
 				'email'          => $params['payerEmail'],
@@ -153,7 +142,7 @@ class BuyMeABeerPaypal {
 				'payment_method' => $params['payerPaymentMethod'],
 				'time'           => current_time( 'mysql' ),
 				'amount'         => $params['payerPaymentTotal'],
-				'description_id' => $params['descriptionId'],
+				'widget_id'      => $params['widget_id'],
 				'url'            => $params['url']
 			)
 		);
@@ -161,9 +150,7 @@ class BuyMeABeerPaypal {
 		return;
 	}
 
-	/**
-	 * @return mixed
-	 */
+
 	public function getToken() {
 		$curlHeaders = array(
 			'Accept: application/json',
@@ -182,14 +169,7 @@ class BuyMeABeerPaypal {
 		return $accessToken;
 	}
 
-	/**
-	 * @param $headers
-	 * @param null $auth
-	 * @param $endPoint
-	 * @param $postFields
-	 *
-	 * @return array|bool|mixed|object
-	 */
+
 	public function curlPost( $headers, $auth = null, $endPoint, $postFields ) {
 		$curl        = curl_init();
 		$curlOptions = array(

@@ -19,7 +19,7 @@
 <table class="bmabTable">
 	<?php if ( $bmabMode == 'manual' ) { ?>
 		<tr class="bmabActiveArea">
-			<td class="label"><label>Active:</label></td>
+            <td class="label"><label for="bmabActive">Active:</label></td>
 			<td class="input">
 				<select name="bmabActive" id="bmabActive">
 					<option value="0" id="off" <?php if ( $bmabActive == 0 ) {
@@ -37,13 +37,13 @@
 	<tr class="bmabWrapper" <?php if ( $bmabMode == 'manual' && $bmabActive == 0 ) {
 		echo "style='display:none;'";
 	} ?>>
-		<td class="label"><label>Description: </label></td>
+        <td class="label"><label for="bmabWidgetId">Widget: </label></td>
 		<td class="input">
-			<select id="bmabTitleDescripID" name="bmabTitleDescripID">
-				<?php foreach ( $titlesAndDescriptions as $td ) {
+            <select id="bmabWidgetId" name="bmabWidgetId">
+				<?php foreach ( $bmabWidgets as $widget ) {
 					?>
-					<option value="<?php echo $td->id; ?>"
-					        id="<?php echo $td->id; ?>"><?php echo $td->title; ?></option>
+                    <option value="<?php echo $widget->id; ?>"
+                            id="<?php echo $widget->id; ?>"><?php echo $widget->title; ?></option>
 				<?php } ?>
 			</select>
 		</td>
@@ -60,13 +60,13 @@
 		<td colspan="2">
 			<?php
 			$c = 1;
-			foreach ( $titlesAndDescriptions as $td ) { ?>
-				<div class="tdPreview"
-				     value="<?php echo $td->id ?>" <?php echo $c == 1 ? '' : 'style="display:none;"'; ?>>
-					<h3><?php echo $td->title; ?></h3>
-					<img src="<?php echo $td->image; ?>" style="max-width:200px;"/>
+			foreach ( $bmabWidgets as $widget ) { ?>
+                <div class="tdPreview"
+                     id="<?php echo $widget->id ?>" <?php echo $c == 1 ? '' : 'style="display:none;"'; ?>>
+                    <h3><?php echo $widget->title; ?></h3>
+                    <img src="<?php echo $widget->image; ?>" style="max-width:200px;"/>
 
-					<p><?php echo $td->description; ?></p>
+                    <p><?php echo $widget->description; ?></p>
 				</div>
 				<?php $c ++;
 			} ?>
