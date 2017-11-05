@@ -1,250 +1,21 @@
 <?php
-require_once( plugin_dir_path( __DIR__ ) . "includes/config.php" );
+
+namespace bmab;
 
 class BuyMeABeerAdmin {
 
-	private $version;
+	private $app;
 
-	public function __construct( $version ) {
-		$this->version      = $version;
-		$this->bmabCurrency = get_option( 'bmabCurrency', 'USD' );
-	}
+	/** @var WidgetRepository widget_repo */
+	protected $widget_repo;
 
-	function getWidget( $id ) {
-		global $wpdb, $bmabConfig;
-		$table  = $wpdb->prefix . $bmabConfig->tables['widgets'];
-		$widget = $wpdb->get_row( "SELECT * FROM $table WHERE id=$id" );
+	/** @var ItemRepository widget_repo */
+	protected $item_repo;
 
-		return $widget;
-	}
-
-	function getWidgets() {
-		global $wpdb, $bmabConfig;
-		$table   = $wpdb->prefix . $bmabConfig->tables['widgets'];
-		$widgets = $wpdb->get_results( "SELECT * FROM $table" );
-
-		return $widgets;
-	}
-
-	function addWidget( $title, $description, $image ) {
-		global $wpdb, $bmabConfig;
-		$table = $wpdb->prefix . $bmabConfig->tables['widgets'];
-
-		$wpdb->insert(
-			$table,
-			array(
-				'title'       => $title,
-				'description' => $description,
-				'image'       => $image
-			),
-			array(
-				'%s',
-				'%s',
-				'%s'
-			)
-		);
-
-		// Check to see if there is a default already and if not make this one the default
-		$wpdb->query( "SELECT * FROM $table WHERE default_option='1'" );
-		if ( $wpdb->num_rows == 0 ) {
-			$id = $wpdb->insert_id;
-			$this->makeDefaultWidget( $id );
-		}
-
-		return true;
-	}
-
-	function makeDefaultWidget( $id ) {
-		global $wpdb, $bmabConfig;
-		$table = $wpdb->prefix . $bmabConfig->tables['widgets'];
-
-		//Check if there is a default and remove it first
-		$currentDefault = $wpdb->query( "SELECT * FROM $table WHERE default_option" );
-		if ( $wpdb->num_rows != 0 ) {
-			$currentDefaultId = $currentDefault['id'];
-			$wpdb->update( $table,
-				array(
-					'is_default' => 0,
-				),
-				array(
-					'id' => $currentDefaultId
-				),
-				array(
-					'%d',
-				),
-				array( '%d' )
-			);
-		}
-		// Update the new default
-		$wpdb->update( $table,
-			array(
-				'is_default' => 1,
-			),
-			array(
-				'id' => $id
-			),
-			array(
-				'%d',
-			),
-			array( '%d' )
-		);
-
-	}
-
-	function updateWidget( $id, $title, $description, $image ) {
-		global $wpdb, $bmabConfig;
-		$table = $wpdb->prefix . $bmabConfig->tables['widgets'];
-
-		$wpdb->update( $table,
-			array(
-				'title'       => $title,
-				'description' => $description,
-				'image'       => $image
-			),
-			array(
-				'id' => $id
-			),
-			array(
-				'%s',
-				'%s',
-				'%s'
-			),
-			array( '%d' )
-		);
-
-		return true;
-	}
-
-	function deleteWidget( $id ) {
-		global $wpdb, $bmabConfig;
-		$table = $wpdb->prefix . $bmabConfig->tables['widgets'];
-		$wpdb->delete( $table, array( 'id' => $id ), array( '%d' ) );
-
-		return true;
-	}
-
-	function getItem( $id ) {
-		global $wpdb, $bmabConfig;
-		$table       = $wpdb->prefix . $bmabConfig->tables['items'];
-		$description = $wpdb->get_row( "SELECT * FROM $table WHERE id=$id" );
-
-		return $description;
-	}
-
-	function getItems() {
-		global $wpdb, $bmabConfig;
-		$table = $wpdb->prefix . $bmabConfig->tables['items'];
-		$items = $wpdb->get_results( "SELECT * FROM $table" );
-
-		foreach ( $items as $key => $value ) {
-			$items[ $key ]->price = $this->formatAsCurrency( $value->price );
-		}
-
-		return $items;
-	}
-
-	function formatAsCurrency( $value ) {
-		global $currencyMappings;
-		$currency = $this->bmabCurrency;
-		$newValue = $currencyMappings[ $currency ]['pre'] . $value . $currencyMappings[ $currency ]['post'];
-
-		return $newValue;
-	}
-
-	function addItem( $name, $price ) {
-		global $wpdb, $bmabConfig;
-		$table = $wpdb->prefix . $bmabConfig->tables['items'];
-
-		$wpdb->insert( $table,
-			array(
-				'name'  => $name,
-				'price' => $price
-			),
-			array(
-				'%s',
-				'%d'
-			)
-		);
-
-		return true;
-	}
-
-	function updateItem( $id, $name, $price ) {
-		global $wpdb, $bmabConfig;
-		$table = $wpdb->prefix . $bmabConfig->tables['items'];
-
-		$wpdb->update( $table,
-			array(
-				'name'  => $name,
-				'price' => $price
-			),
-			array(
-				'id' => $id
-			),
-			array(
-				'%s',
-				'%d'
-			),
-			array(
-				'%d'
-			)
-		);
-
-		return true;
-	}
-
-	function deleteItem( $id ) {
-		global $wpdb, $bmabConfig;
-		$table = $wpdb->prefix . $bmabConfig->tables['items'];
-		$wpdb->delete( $table, array( 'id' => $id ), array( '%d' ) );
-
-		return true;
-	}
-
-	function updateSettings(
-		$paypalEmail,
-		$paypalMode,
-		$paypalClientId,
-		$paypalSecret,
-		$currency,
-		$displayMode,
-		$successPage,
-		$errorPage
-	) {
-		$settings = array(
-			'bmabPaypalEmail' => $paypalEmail,
-			'bmabPaypalMode' => $paypalMode,
-			'bmabPaypalClientId' => $paypalClientId,
-			'bmabPaypalSecret' => $paypalSecret,
-			'bmabCurrency' => $currency,
-			'bmabDisplayMode' => $displayMode,
-			'bmabSuccessPage' => $successPage,
-			'bmabErrorPage' => $errorPage
-		);
-
-		// Add/Update each setting as a wordpress option
-		foreach ( $settings as $setting => $value ) {
-
-			if ( get_option( $setting ) !== false ) {
-				update_option( $setting, $value );
-			} else {
-				$deprecated = null;
-				$autoload   = 'no';
-				add_option( $setting, $value, $deprecated, $autoload );
-			}
-		}
-
-		return true;
-
-	}
-
-	public function getPayments() {
-		global $wpdb, $bmabConfig;
-		$paymentTable = $wpdb->prefix . $bmabConfig->tables['payments'];
-		$widgetTable  = $wpdb->prefix . $bmabConfig->tables['widgets'];
-		$payments     = $wpdb->get_results( "SELECT * FROM $paymentTable LEFT JOIN $widgetTable ON $paymentTable.widget_id=$widgetTable.id" );
-
-		return $payments;
+	public function __construct( $app ) {
+		$this->app         = $app;
+		$this->widget_repo = $this->app->repos['widgets'];
+		$this->item_repo   = $this->app->repos['items'];
 	}
 
 	public function installation() {
@@ -321,14 +92,14 @@ class BuyMeABeerAdmin {
 		add_option( 'bmabDatabaseVersion', $dbVersion );
 
 		// Seed the database
-		$this->addItem( "1 Beer", 3 );
-		$this->addItem( "6 Beers", 15 );
-		$this->addItem( "12 Beers", 25 );
-		$this->addItem( '36 Beers', 45 );
-		$this->addItem( "Keg of Beer", 125 );
+		$this->item_repo->create( "1 Beer", 3 );
+		$this->item_repo->create( "6 Beers", 15 );
+		$this->item_repo->create( "12 Beers", 25 );
+		$this->item_repo->create( '36 Beers', 45 );
+		$this->item_repo->create( "Keg of Beer", 125 );
 
 		// Todo add group 'Default'
-		$this->addWidget( 'Did I help you out?', 'If so how about buying me some beer?', '' );
+		$this->widget_repo->create( 'Did I help you out?', 'If so how about buying me some beer?', '' );
 	}
 
 	/**
@@ -366,11 +137,11 @@ class BuyMeABeerAdmin {
 				'jquery',
 				'bmabNoty'
 			) );
-		$currency = $this->bmabCurrency;
-		$currencyPre = $currencyMappings[ $currency ]['pre'];
+		$currency     = $this->app->currency;
+		$currencyPre  = $currencyMappings[ $currency ]['pre'];
 		$currencyPost = $currencyMappings[ $currency ]['post'];
 		wp_localize_script( 'bmabAdminJs', 'BuyMeABeer', array(
-			'currencyPre' =>  $currencyPre,
+			'currencyPre'  => $currencyPre,
 			'currencyPost' => $currencyPost
 		) );
 
@@ -418,7 +189,7 @@ class BuyMeABeerAdmin {
 //			$bmabActive = $bmabMode == 'manual' ? get_post_meta($postId, 'bmabActive', true) : 1;
 //		}
 
-		$bmabWidgets = $this->getWidgets();
+		$bmabWidgets = $this->widget_repo->getAll();
 		require_once plugin_dir_path( __FILE__ ) . 'partials/postManager.php';
 	}
 

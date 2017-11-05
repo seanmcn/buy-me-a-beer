@@ -1,38 +1,47 @@
 <?php
-require_once( plugin_dir_path( __DIR__ ) . "includes/config.php" );
+
+namespace bmab;
 
 /**
  * Class BuyMeABeerPaypal
  */
 class BuyMeABeerPaypal {
 
+	protected $app;
 	protected $paypalApi;
 	protected $paypalAccount;
 	protected $paypalClientId;
 	protected $paypalSecret;
-	protected $bmabCurrency;
+	protected $currency;
 	protected $paypalConsentEndpoint;
 
+	/** @var ItemRepository widget_repo */
+	protected $itemRepo;
 
-	public function __construct() {
-		$paypalMode                  = get_option( 'bmabPaypalMode', 'sandbox' );
+	/** @var  PaymentRepository $paymentRepo */
+	protected $paymentRepo;
+
+	public function __construct( App $app ) {
+		$this->app         = $app;
+		$this->currency    = $app->currency;
+		$this->itemRepo    = $app->repos['items'];
+		$this->paymentRepo = $app->repos['payments'];
+		/** @var SettingRepository $settingRepo */
+		$settingRepo                 = $app->repos['settings'];
+		$paypalMode                  = $settingRepo->get( SettingRepository::PAYPAL_MODE, 'sandbox' );
+		$this->paypalAccount         = $settingRepo->get( SettingRepository::PAYPAL_EMAIL, null );
+		$this->paypalClientId        = $settingRepo->get( SettingRepository::PAYPAL_CLIENT, null );
+		$this->paypalSecret          = $settingRepo->get( SettingRepository::PAYPAL_SECRET, null );
 		$this->paypalApi             = $paypalMode === 'live' ? "api.paypal.com" : "api.sandbox.paypal.com";
-		$this->paypalAccount         = get_option( 'bmabPaypalEmail', null );
-		$this->paypalClientId        = get_option( 'bmabPaypalClientId', null );
-		$this->paypalSecret          = get_option( 'bmabPaypalSecret', null );
-		$this->bmabCurrency          = get_option( 'bmabCurrency', 'USD' );
 		$this->paypalConsentEndpoint = "/webapps/auth/protocol/openidconnect/v1/authorize";
 	}
 
 	public function createPayment( $widgetId, $itemId, $location ) {
-		global $wpdb, $bmabConfig;
-		$table = $wpdb->prefix . $bmabConfig->tables['items'];
-		$item  = $wpdb->get_row( "SELECT * FROM $table WHERE id=$itemId" );
+		$item = $this->itemRepo->get( $itemId );
 
-		$blogName  = get_bloginfo( 'name' );
-		$priceName = $item->name;
-		$price     = $item->price;
-
+		$blogName                                 = get_bloginfo( 'name' );
+		$priceName                                = $item->name;
+		$price                                    = $item->price;
 		$accessToken                              = $this->getToken();
 		$curlHeaders                              = array(
 			'Content-Type: application/json',
@@ -44,7 +53,7 @@ class BuyMeABeerPaypal {
 		$paymentObject['transactions'][]          = array(
 			'amount'      => array(
 				'total'    => $price,
-				'currency' => $this->bmabCurrency,
+				'currency' => $this->currency,
 				'details'  => array(
 					'subtotal' => $price,
 					'tax'      => '0.00',
@@ -101,7 +110,10 @@ class BuyMeABeerPaypal {
 			$params['url']               = $data['url'];
 			$params['widget_id']         = $data['widget_id'];
 
-			$this->savePayment( $params );
+
+			$this->paymentRepo->create( $params['paymentId'], $params['payerEmail'], $params['payerFirstName'],
+				$params['payerLastName'], $params['payerShippingAddress'], $params['payerPaymentMethod'],
+				$params['payerPaymentTotal'], $params['widget_id'], $params['url'] );
 
 			$bmabSuccessPage = get_option( 'bmabSuccessPage', false );
 			if ( $bmabSuccessPage ) {
@@ -126,30 +138,6 @@ class BuyMeABeerPaypal {
 			exit;
 		}
 	}
-
-
-	public function savePayment( $params ) {
-		global $wpdb, $bmabConfig;
-		$table = $wpdb->prefix . $bmabConfig->tables['payments'];
-		$wpdb->insert(
-			$table,
-			array(
-				'paypal_id'      => $params['paymentId'],
-				'email'          => $params['payerEmail'],
-				'first_name'     => $params['payerFirstName'],
-				'last_name'      => $params['payerLastName'],
-				'address'        => json_encode( $params['payerShippingAddress'] ),
-				'payment_method' => $params['payerPaymentMethod'],
-				'time'           => current_time( 'mysql' ),
-				'amount'         => $params['payerPaymentTotal'],
-				'widget_id'      => $params['widget_id'],
-				'url'            => $params['url']
-			)
-		);
-
-		return;
-	}
-
 
 	public function getToken() {
 		$curlHeaders = array(

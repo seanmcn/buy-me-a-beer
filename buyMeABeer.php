@@ -22,14 +22,31 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-require_once plugin_dir_path( __FILE__ ) . 'includes/manager.php';
-
+require_once plugin_dir_path( __FILE__ ) . 'includes/App.php';
+//require_once plugin_dir_path( __FILE__ ) . 'includes/manager.php';
+//require_once plugin_dir_path( __FILE__ ) . "includes/config.php";
+//require_once plugin_dir_path( __FILE__ ) . "includes/repo/BaseRepository.php";
+//
+//require_once plugin_dir_path( __FILE__ ) . "includes/model/ItemModel.php";
+//require_once plugin_dir_path( __FILE__ ) . "includes/repo/ItemRepository.php";
+//
+//require_once plugin_dir_path( __FILE__ ) . "includes/model/PaymentModel.php";
+//require_once plugin_dir_path( __FILE__ ) . "includes/repo/PaymentRepository.php";
+//
+//require_once plugin_dir_path( __FILE__ ) . "includes/repo/SettingRepository.php";
+//
+//
+//require_once plugin_dir_path( __FILE__ ) . "includes/model/WidgetModel.php";
+//require_once plugin_dir_path( __FILE__ ) . "includes/repo/WidgetRepository.php";
+//
+//require_once plugin_dir_path( __FILE__ ) . "payment_services/paypal.php";
 
 function runBuyMeABeerPlugin() {
 
-	$bmab = new BuyMeABeer();
+	$bmab = new bmab\BuyMeABeer();
 	register_activation_hook( __FILE__, array( $bmab, 'activatePlugin' ) );
 	$bmab->run();
 
 }
+
 runBuyMeABeerPlugin();

@@ -1,5 +1,7 @@
 <?php
 
+namespace bmab;
+
 /**
  * Class BuyMeABeer
  */
@@ -8,21 +10,22 @@ class BuyMeABeer {
 	 * @var BuyMeABeerLoader
 	 */
 	protected $loader;
-	/**
-	 * @var string
-	 */
-	protected $plugin_slug;
+
 	/**
 	 * @var string
 	 */
 	protected $version;
 
 	/**
+	 * @var array
+	 */
+	protected $app;
+
+	/**
 	 * BuyMeABeer constructor.
 	 */
 	public function __construct() {
-		$this->plugin_slug = 'buyMeABeer';
-		$this->version     = '0.1';
+		$this->app = new App();
 
 		$this->loadDependencies();
 		$this->defineAdminHooks();
@@ -45,7 +48,7 @@ class BuyMeABeer {
 	 *
 	 */
 	private function defineAdminHooks() {
-		$admin = new BuyMeABeerAdmin( $this->getVersion() );
+		$admin = new BuyMeABeerAdmin( $this->app );
 		$this->loader->addAction( 'admin_menu', $admin, 'adminMenu' );
 		$this->loader->addAction( 'admin_enqueue_styles', $admin, 'adminEnqueueStyles' );
 		$this->loader->addAction( 'admin_enqueue_scripts', $admin, 'adminEnqueueScripts' );
@@ -53,7 +56,7 @@ class BuyMeABeer {
 		$this->loader->addAction( 'save_post', $admin, 'savePostWidget' );
 
 		// Back-end Ajax Calls
-		$adminAjax = new BuyMeABeerAdminAjax( $admin );
+		$adminAjax = new BuyMeABeerAdminAjax( $this->app );
 		$this->loader->addAction( 'wp_ajax_bmab_formHandler', $adminAjax, 'formHandler' );
 		$this->loader->addAction( 'wp_ajax_bmab_contentHandler', $adminAjax, 'contentHandler' );
 
@@ -63,7 +66,7 @@ class BuyMeABeer {
 	 *
 	 */
 	private function definePublicHooks() {
-		$public = new BuyMeABeerPublic( $this->getVersion() );
+		$public = new BuyMeABeerPublic( $this->app );
 
 		// Auto post/page widget
 		$this->loader->addAction( 'the_content', $public, 'displayPostWidget' );
@@ -75,7 +78,7 @@ class BuyMeABeer {
 		$this->loader->addAction( 'init', $public, 'session' );
 
 		// Front-end Ajax Calls
-		$publicAjax = new BuyMeABeerPublicAjax();
+		$publicAjax = new BuyMeABeerPublicAjax( $this->app );
 		$this->loader->addAction( 'wp_ajax_bmab_publicFormHandler', $publicAjax, 'formHandler' );
 		$this->loader->addAction( 'wp_ajax_nopriv_bmab_publicFormHandler', $publicAjax, 'formHandler' );
 
@@ -107,7 +110,7 @@ class BuyMeABeer {
 	 * @return string
 	 */
 	public function getVersion() {
-		return $this->version;
+		return $this->app->version;
 	}
 
 }

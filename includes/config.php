@@ -1,5 +1,7 @@
 <?php
 
+namespace bmab;
+
 class BuyMeABeerConfig {
 	public $tables = [
 		'groups'        => 'bmab_groups',
@@ -15,6 +17,7 @@ global $bmabConfig;
 $bmabConfig = new BuyMeABeerConfig();
 
 // Todo: Build from paypal?
+// Todo: move into config
 global $currencyMappings;
 $currencyMappings = array(
 	"AUD" => array(

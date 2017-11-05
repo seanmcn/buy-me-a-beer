@@ -1,24 +1,33 @@
 <?php
-require_once( plugin_dir_path( __DIR__ ) . "includes/config.php" );
+
+namespace bmab;
 
 /**
  * Class BuyMeABeerPublic
  */
+/**
+ * Class BuyMeABeerPublic
+ * @package bmab
+ */
 class BuyMeABeerPublic {
 
+
 	/**
-	 * @var float
+	 * @var App $app
 	 */
-	private $version;
+	private $app;
+
+	/** @var ItemRepository $itemsRepo */
+	protected $itemsRepo;
 
 	/**
 	 * BuyMeABeerPublic constructor.
 	 *
-	 * @param $version
+	 * @param $app
 	 */
-	public function __construct( $version ) {
-		$this->version      = $version;
-		$this->bmabCurrency = get_option( 'bmabCurrency', 'USD' );
+	public function __construct( $app ) {
+		$this->app       = $app;
+		$this->itemsRepo = $this->app->repos['items'];
 	}
 
 	/**
@@ -46,20 +55,19 @@ class BuyMeABeerPublic {
 
 			$bmabActive = $bmabMode == 'manual' ? get_post_meta( $postId, 'bmabActive', true ) : 1;
 
-			$widgetId = get_post_meta( $postId, 'bmabItemId', true );
+			$widgetId = get_post_meta( $postId, 'bmabWidgetId', true );
+			$widgetId = empty( $widgetId ) ? false : $widgetId;
+
 			if ( ! is_page() || $bmabMode == 'automatic-all' ) {
 				if ( $bmabActive == 1 && ! is_page( 'bmab-success' ) ) {
 
-					// Todo: really? i assume i had some reasoning?
-					if ( $widgetId !== "" ) {
-						$widget = $this->getWidget( $widgetId ) !== null ? $this->getWidget( $widgetId ) :
-							$this->getDefaultWidget();
-					} else {
-						$widget = $this->getDefaultWidget();
-					}
+					/** @var WidgetRepository $repo */
+					$repo   = $this->app->repos['widgets'];
+					$widget = $repo->get( $widgetId );
+					$widget = $widget ? $widget : $repo->getDefaultWidget();
 
-					// todo : add to only get items for widget
-					$items = $this->getItems();
+					// todo : add to only get items for widgets
+					$items = $this->itemsRepo->getAllFormatted();
 
 					$title       = $widget->title;
 					$description = $widget->description;
@@ -69,7 +77,7 @@ class BuyMeABeerPublic {
 					ob_start();
 					require_once plugin_dir_path( __DIR__ ) . 'public/partials/postWidget.php';
 					$template = ob_get_contents();
-					$content .= $template;
+					$content  .= $template;
 					ob_end_clean();
 				}
 			}
@@ -80,6 +88,9 @@ class BuyMeABeerPublic {
 
 	}
 
+	/**
+	 * @return string
+	 */
 	public function displayShortCodeWidget() {
 		if ( ! is_home() ) {
 
@@ -95,16 +106,13 @@ class BuyMeABeerPublic {
 			wp_enqueue_style( 'bmabCss' );
 
 			$postId   = get_the_ID();
-			$widgetId = get_post_meta( $postId, 'bmabItemId', true );
+			$widgetId = get_post_meta( $postId, 'bmabWidgetId', true );
+			$widgetId = empty( $widgetId ) ? false : $widgetId;
 
-			// todo ??? as above
-			if ( $widgetId !== "" ) {
-				$widget = $this->getWidget( $widgetId ) !== null ? $this->getWidget( $widgetId ) :
-					$this->getDefaultWidget();
-			} else {
-				$widget = $this->getDefaultWidget();
-			}
-
+			/** @var WidgetRepository $repo */
+			$repo   = $this->app->repos['widget'];
+			$widget = $repo->get( $widgetId );
+			$widget = $widget ? $widget : $repo->getDefaultWidget();
 
 			$title       = $widget->title;
 			$description = $widget->description;
@@ -118,51 +126,14 @@ class BuyMeABeerPublic {
 
 			return $template;
 		}
+
 		return '';
 	}
 
 
-	function getWidget( $id ) {
-		global $wpdb, $bmabConfig;
-		$table       = $wpdb->prefix . $bmabConfig->tables['widgets'];
-		$description = $wpdb->get_row( "SELECT * FROM $table WHERE id=$id" );
-		return $description;
-	}
-
-
-	function getDefaultWidget() {
-		global $wpdb, $bmabConfig;
-		$table       = $wpdb->prefix . $bmabConfig->tables['widgets'];
-		$description = $wpdb->get_row( "SELECT * FROM $table WHERE is_default" );
-
-		return $description;
-	}
-
-
-	function getItems() {
-		global $wpdb, $bmabConfig;
-		$table = $wpdb->prefix . $bmabConfig->tables['items'];
-		$items = $wpdb->get_results( "SELECT * FROM $table" );
-		foreach ( $items as $key => $value ) {
-			$items[ $key ]->price = $this->formatAsCurrency( $value->price );
-		}
-
-		return $items;
-	}
-
 	/**
-	 * @param $value
-	 *
-	 * @return string
+	 * Wordpress makes use of this.
 	 */
-	function formatAsCurrency( $value ) {
-		global $currencyMappings;
-		$currency = $this->bmabCurrency;
-		$newValue = $currencyMappings[ $currency ]['pre'] . $value . $currencyMappings[ $currency ]['post'];
-
-		return $newValue;
-	}
-
 	public function session() {
 		if ( ! session_id() ) {
 			session_start();

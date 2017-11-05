@@ -1,29 +1,34 @@
 <?php
-require_once( plugin_dir_path( __DIR__ ) . "includes/config.php" );
-//require_once( plugin_dir_path( __DIR__ ) . "payment_services/paypal.php" );
+
+namespace bmab;
 /**
  * Class BuyMeABeerAdminAjax
  */
 class BuyMeABeerAdminAjax {
 
-	/**
-	 * @var BuyMeABeerAdmin
-	 */
-	protected $bmabAdmin;
 
+	protected $app;
 
-	/**
-	 * BuyMeABeerAjax constructor.
-	 *
-	 * @param BuyMeABeerAdmin $bmabAdmin
-	 */
-	function __construct( BuyMeABeerAdmin $bmabAdmin ) {
-		$this->bmabAdmin = $bmabAdmin;
+	/** @var WidgetRepository $widgetRepo */
+	protected $widgetRepo;
+
+	/** @var ItemRepository $itemRepo */
+	protected $itemRepo;
+
+	/** @var SettingRepository $settingRepo */
+	protected $settingRepo;
+
+	/** @var PaymentRepository $paymentRepo */
+	protected $paymentRepo;
+
+	function __construct( $app ) {
+		$this->app         = $app;
+		$this->widgetRepo  = $this->app->repos['widgets'];
+		$this->itemRepo    = $this->app->repos['items'];
+		$this->settingRepo = $this->app->repos['settings'];
+		$this->paymentRepo = $this->app->repos['payments'];
 	}
 
-	/**
-	 *
-	 */
 	function formHandler() {
 		$action = isset( $_REQUEST['run'] ) ? $_REQUEST['run'] : null;
 
@@ -38,7 +43,7 @@ class BuyMeABeerAdminAjax {
 				$successPage    = isset( $_REQUEST['successPage'] ) ? $_REQUEST['successPage'] : null;
 				$errorPage      = isset( $_REQUEST['errorPage'] ) ? $_REQUEST['errorPage'] : null;
 
-				$this->bmabAdmin->updateSettings( $paypalEmail, $paypalMode, $paypalClientId, $paypalSecret, $currency,
+				$this->settingRepo->update( $paypalEmail, $paypalMode, $paypalClientId, $paypalSecret, $currency,
 					$displayMode, $successPage, $errorPage );
 				$message = [ "message" => "Settings saved", "type" => "success" ];
 				echo json_encode( $message );
@@ -53,7 +58,7 @@ class BuyMeABeerAdminAjax {
 					$error = [ "message" => "Title and Description are required!", "type" => "error" ];
 					echo json_encode( $error );
 				} else {
-					$this->bmabAdmin->addWidget( $title, $description, $image );
+					$this->widgetRepo->create( $title, $description, $image );
 					$message = [ "message" => "Widget created", "type" => "success" ];
 					echo json_encode( $message );
 				}
@@ -69,7 +74,7 @@ class BuyMeABeerAdminAjax {
 					$error = [ "message" => "Title and Description are required!", "type" => "error" ];
 					echo json_encode( $error );
 				} else {
-					$this->bmabAdmin->updateWidget( $id, $title, $description, $image );
+					$this->widgetRepo->update( $id, $title, $description, $image );
 					$message = [ "message" => "Widget saved!", "type" => "success" ];
 					echo json_encode( $message );
 				}
@@ -82,7 +87,7 @@ class BuyMeABeerAdminAjax {
 					$error = [ "message" => "Error setting default widget", "type" => "error" ];
 					echo json_encode( $error );
 				} else {
-					$this->bmabAdmin->makeDefaultWidget( $id );
+					$this->widgetRepo->setAsDefaultWidget( $id );
 					$message = [ "message" => "Default widget set!", "type" => "success" ];
 					echo json_encode( $message );
 				}
@@ -94,7 +99,7 @@ class BuyMeABeerAdminAjax {
 					$error = [ "message" => "Error", "type" => "error" ];
 					echo json_encode( $error );
 				} else {
-					$this->bmabAdmin->deleteWidget( $id );
+					$this->widgetRepo->delete( $id );
 					$message = [ "message" => "Widget has been deleted!", "type" => "success" ];
 					echo json_encode( $message );
 				}
@@ -107,7 +112,7 @@ class BuyMeABeerAdminAjax {
 					$error = [ "message" => "Name and Price are required!", "type" => "error" ];
 					echo json_encode( $error );
 				} else {
-					$this->bmabAdmin->addItem( $name, $price );
+					$this->itemRepo->create( $name, $price );
 					$message = [ "message" => "Item '$name' created", "type" => "success" ];
 					echo json_encode( $message );
 				}
@@ -122,7 +127,7 @@ class BuyMeABeerAdminAjax {
 					$error = [ "message" => "Name and Price are required!", "type" => "error" ];
 					echo json_encode( $error );
 				} else {
-					$this->bmabAdmin->updateItem( $id, $name, $price );
+					$this->itemRepo->update( $id, $name, $price );
 					$message = [ "message" => "Item '$name' saved", "type" => "success" ];
 					echo json_encode( $message );
 				}
@@ -137,7 +142,7 @@ class BuyMeABeerAdminAjax {
 					];
 					echo json_encode( $error );
 				} else {
-					$this->bmabAdmin->deleteItem( $id );
+					$this->itemRepo->delete( $id );
 					$message = [ "message" => "Item has been deleted!", "type" => "success" ];
 					echo json_encode( $message );
 				}
@@ -157,29 +162,29 @@ class BuyMeABeerAdminAjax {
 		$data = [ "message" => "Something went wrong while making your request!", "type" => "error" ];
 		switch ( $action ) {
 			case "bmabViewItems":
-				$data = $this->bmabAdmin->getItems();
+				$data = $this->itemRepo->getAll();
 				break;
 
 			case "bmabEditItem":
 				$id = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
 				if ( $id !== null ) {
-					$data = $this->bmabAdmin->getItem( $id );
+					$data = $this->itemRepo->get( $id );
 				}
 				break;
 
 			case "bmabViewWidgets":
-				$data = $this->bmabAdmin->getWidgets();
+				$data = $this->widgetRepo->getAll();
 				break;
 
 			case "bmabEditWidget":
 				$id = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
 				if ( $id !== null ) {
-					$data = $this->bmabAdmin->getWidget( $id );
+					$data = $this->widgetRepo->get( $id );
 				}
 				break;
 
 			case "bmabViewPayments":
-				$data = $this->bmabAdmin->getPayments();
+				$data = $this->paymentRepo->getAll();
 				break;
 		}
 		echo json_encode( $data );

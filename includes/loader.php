@@ -1,5 +1,6 @@
 <?php
 
+namespace bmab;
 /**
  * Class BuyMeABeerLoader
  */
