@@ -1,0 +1,18 @@
+Items
+- id
+- name
+- price
+
+Groups
+- id
+- name
+- items[]
+
+Widgets
+- id
+- name
+- title
+- description
+- image
+- is_default
+- style ?
