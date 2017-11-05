@@ -45,17 +45,18 @@
 					$displayMode = get_option( 'bmabDisplayMode', 'automatic' );
 					?>
 					<select name="bmabDisplayMode" id="bmabDisplayMode">
-						<option id="automatic" value="automatic" <?php if ( $displayMode == 'automatic' ) {
+                        <option value="automatic" value="automatic" <?php if ( $displayMode == 'automatic' ) {
 							echo "selected";
 						}
 						?>>Automatic (Display on all posts)
 						</option>
-						<option id="automatic-all" value="automatic-all" <?php if ( $displayMode == 'automatic-all' ) {
+                        <option value="automatic-all"
+                                value="automatic-all" <?php if ( $displayMode == 'automatic-all' ) {
 							echo "selected";
 						}
 						?>>Automatic (Display on all posts &amp; pages)
 						</option>
-						<option id="manual" value="manual" <?php if ( $displayMode == 'manual' ) {
+                        <option value="manual" value="manual" <?php if ( $displayMode == 'manual' ) {
 							echo "selected";
 						}
 						?>>Manual ( Manually choose which posts to display on)
@@ -75,19 +76,19 @@
 			</tr>
 			<tr>
 				<th scope="row">
-					<label for="paypaplMode">Paypal Endpoint:</label>
+                    <label for="paypalMode">Paypal Endpoint:</label>
 				</th>
 				<td>
 					<?php
 					$paypalMode = get_option( 'bmabPaypalMode', 'sandbox' );
 					?>
 					<select name="paypalMode" id="paypalMode">
-						<option id="sandbox" value="sandbox" <?php if ( $paypalMode == 'sandbox' ) {
+                        <option value="sandbox" value="sandbox" <?php if ( $paypalMode == 'sandbox' ) {
 							echo "selected";
 						}
 						?>>Sandbox
 						</option>
-						<option id="live" value="live" <?php if ( $paypalMode == 'live' ) {
+                        <option value="live" value="live" <?php if ( $paypalMode == 'live' ) {
 							echo "selected";
 						}
 						?>>Live
@@ -138,9 +139,9 @@
 					<select name="bmabCurrency" id="bmabCurrency">
 						<?php foreach ( $currencies as $key => $currency ) {
 							if ( $key == $bmabCurrency ) {
-								echo "<option id='$key' selected>$currency</option>";
+								echo "<option value='$key' selected>$currency</option>";
 							} else {
-								echo "<option id='$key'>$currency</option>";
+								echo "<option value='$key'>$currency</option>";
 							}
 
 						}
@@ -148,6 +149,58 @@
 					</select>
 				</td>
 			</tr>
+            <tr>
+                <th scope="row">
+                    <label for="bmabSuccessPage">Donation success page:</label>
+                </th>
+                <td>
+                    <select name="bmabSuccessPage" id="bmabSuccessPage">
+						<?php
+						$bmabSuccessPage = get_option( 'bmabSuccessPage', false );
+						if ( ! $bmabSuccessPage ) {
+							echo "<option value='0'>Pick a page to redirect donation success to!</option>";
+						}
+						$pages = get_pages();
+						foreach ( $pages as $page ) {
+							$selected = '';
+							if ( $page->post_status !== 'publish' ) {
+								continue;
+							}
+							if ( $bmabSuccessPage && $page->ID == $bmabSuccessPage ) {
+								$selected = ' selected';
+							}
+							echo "<option value='$page->ID' $selected>{$page->post_title}</option>";
+						}
+						?>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="bmabErrorPage">Donation failure page:</label>
+                </th>
+                <td>
+                    <select name="bmabErrorPage" id="bmabErrorPage">
+						<?php
+						$bmabErrorPage = get_option( 'bmabErrorPage', false );
+						if ( ! $bmabErrorPage ) {
+							echo "<option value='0'>Pick a page to redirect donation failures to!</option>";
+						}
+						$pages = get_pages();
+						foreach ( $pages as $page ) {
+							$selected = '';
+							if ( $page->post_status !== 'publish' ) {
+								continue;
+							}
+							if ( $bmabErrorPage && $page->ID == $bmabErrorPage ) {
+								$selected = ' selected';
+							}
+							echo "<option value='{$page->ID}' $selected>{$page->post_title}</option>";
+						}
+						?>
+                    </select>
+                </td>
+            </tr>
 			</tbody>
 		</table>
 		<p class="submit">

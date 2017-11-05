@@ -35,9 +35,11 @@ class BuyMeABeerAdminAjax {
 				$paypalSecret   = isset( $_REQUEST['paypalSecret'] ) ? $_REQUEST['paypalSecret'] : null;
 				$currency       = isset( $_REQUEST['currency'] ) ? $_REQUEST['currency'] : null;
 				$displayMode    = isset( $_REQUEST['displayMode'] ) ? $_REQUEST['displayMode'] : null;
+				$successPage    = isset( $_REQUEST['successPage'] ) ? $_REQUEST['successPage'] : null;
+				$errorPage      = isset( $_REQUEST['errorPage'] ) ? $_REQUEST['errorPage'] : null;
 
 				$this->bmabAdmin->updateSettings( $paypalEmail, $paypalMode, $paypalClientId, $paypalSecret, $currency,
-					$displayMode );
+					$displayMode, $successPage, $errorPage );
 				$message = [ "message" => "Settings saved", "type" => "success" ];
 				echo json_encode( $message );
 				break;

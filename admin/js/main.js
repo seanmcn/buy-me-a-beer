@@ -207,12 +207,14 @@ function bmabInit() {
     bmabPage(id);
 }
 function bmabSaveSettings() {
-    var displayMode = jQuery('#bmabDisplayMode').find('option:selected').attr('id');
+  var displayMode = jQuery('#bmabDisplayMode').find('option:selected').val();
     var paypalEmail = jQuery('#paypalEmail').val();
     var paypalMode = jQuery('#paypalMode').val();
     var paypalClientId = jQuery('#paypalClientId').val();
     var paypalSecret = jQuery('#paypalSecret').val();
-    var currency = jQuery('#bmabCurrency').find('option:selected').attr('id');
+  var currency = jQuery('#bmabCurrency').find('option:selected').val();
+  var successPage = jQuery('#bmabSuccessPage').find('option:selected').val();
+  var errorPage = jQuery('#bmabErrorPage').find('option:selected').val();
     jQuery.post(ajaxurl, {
             action: "bmab_formHandler",
             run: "saveSettings",
@@ -221,7 +223,10 @@ function bmabSaveSettings() {
             paypalClientId: paypalClientId,
             paypalSecret: paypalSecret,
             currency: currency,
-            displayMode: displayMode
+      displayMode: displayMode,
+      successPage: successPage,
+      errorPage: errorPage,
+
         }, function (data) {
             bmabAlertMessage(data.message, data.type);
         }, "JSON"

@@ -111,11 +111,28 @@ class BuyMeABeerPaypal {
 			$params['descriptionId']     = $data['descriptionId'];
 
 			$this->savePayment( $params );
-			//Todo Sean: Thank you page ->
-			wp_redirect( home_url() . '/bmab-success' );
+
+			$bmabSuccessPage = get_option( 'bmabSuccessPage', false );
+			if ( $bmabSuccessPage ) {
+				$post = get_post( $bmabSuccessPage );
+				if ( $post ) {
+					wp_redirect( $post->guid );
+					exit;
+				}
+			}
+			wp_redirect( home_url() );
+			exit;
 		} else {
-			//Todo Sean : Payment Failed page ->
-			wp_redirect( home_url() . '/bmab-failure' );
+			$bmabErrorPage = get_option( 'bmabErrorPage', false );
+			if ( $bmabErrorPage ) {
+				$post = get_post( $bmabErrorPage );
+				if ( $post ) {
+					wp_redirect( $post->guid );
+					exit;
+				}
+			}
+			wp_redirect( home_url() );
+			exit;
 		}
 	}
 

@@ -214,14 +214,25 @@ class BuyMeABeerAdmin {
 		return true;
 	}
 
-	function updateSettings( $paypalEmail, $paypalMode, $paypalClientId, $paypalSecret, $currency, $displayMode ) {
+	function updateSettings(
+		$paypalEmail,
+		$paypalMode,
+		$paypalClientId,
+		$paypalSecret,
+		$currency,
+		$displayMode,
+		$successPage,
+		$errorPage
+	) {
 		$settings = array(
-			'bmabPaypalEmail'    => $paypalEmail,
-			'bmabPaypalMode'     => $paypalMode,
+			'bmabPaypalEmail' => $paypalEmail,
+			'bmabPaypalMode' => $paypalMode,
 			'bmabPaypalClientId' => $paypalClientId,
-			'bmabPaypalSecret'   => $paypalSecret,
-			'bmabCurrency'       => $currency,
-			'bmabDisplayMode'    => $displayMode
+			'bmabPaypalSecret' => $paypalSecret,
+			'bmabCurrency' => $currency,
+			'bmabDisplayMode' => $displayMode,
+			'bmabSuccessPage' => $successPage,
+			'bmabErrorPage' => $errorPage
 		);
 
 		// Add/Update each setting as a wordpress option
