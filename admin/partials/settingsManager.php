@@ -30,8 +30,8 @@
 	<div class="bmabContent" id="bmabMain">
 		<p>
 			<strong>Where do I get my Paypal ID?</strong> <br/>
-			You can get a Paypal REST ID by <a href="https://developer.paypal.com/webapps/developer/applications/"
-			                                   target="_blank"> clicking here </a>
+            You can get a Paypal REST ID by <a href="https://developer.paypal.com/developer/applications"
+                                               target="_blank"> clicking here </a>
 			and pressing the blue "Create App" button
 		</p>
 		<table class="form-table">
