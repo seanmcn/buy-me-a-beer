@@ -4,7 +4,7 @@ jQuery(document).ready(function ($) {
     $('body').on("click", "#bmabBuy", function (e) {
         e.preventDefault();
         var bmabDescriptionId = $('#bmabDescriptionId').val();
-        var bmabOption = $('#bmabOption').val();
+      var bmabOption = $('#bmabSelect').val();
 
         jQuery.post(BuyMeABeer.ajaxUrl, {
                 action: "bmab_publicFormHandler",
