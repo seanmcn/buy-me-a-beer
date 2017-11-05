@@ -389,7 +389,7 @@
 					<label for="newDescriptionDescription">Description:</label>
 				</th>
 				<td>
-					<textarea id="newDescriptionDescription"></textarea>
+                    <textarea id="newDescriptionDescription" cols="50"></textarea>
 				</td>
 			</tr>
 			<tr>
@@ -435,7 +435,7 @@
 					<label for="editDescriptionDescription">Description:</label>
 				</th>
 				<td>
-					<textarea id="editDescriptionDescription" name="editDescriptionDescription"></textarea>
+                    <textarea id="editDescriptionDescription" name="editDescriptionDescription" cols="50"></textarea>
 				</td>
 			</tr>
 			<tr>
