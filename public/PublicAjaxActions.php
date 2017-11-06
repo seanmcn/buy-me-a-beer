@@ -2,11 +2,7 @@
 
 namespace bmab;
 
-/**
- * Class BuyMeABeerPublicAjax
- * @package bmab
- */
-class BuyMeABeerPublicAjax {
+class PublicAjaxActions {
 
 	protected $app;
 
@@ -23,7 +19,7 @@ class BuyMeABeerPublicAjax {
 		try {
 			if ( $widgetId !== null && $itemId !== null ) {
 				// Todo Sean: Different payment providers here
-				$paypal = new BuyMeABeerPaypal( $this->app );
+				$paypal = new Paypal( $this->app );
 				echo json_encode( $paypal->createPayment( $widgetId, $itemId, $location ) );
 				wp_die();
 			} else {

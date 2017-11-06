@@ -78,12 +78,9 @@ class WidgetRepository extends BaseRepository {
 	}
 
 	public function isDefaultWidgetSet() {
-		global $wpdb, $bmabConfig;
-		$table = $wpdb->prefix . $bmabConfig->tables['widgets'];
+		$this->app->db->query( "SELECT * FROM $this->table WHERE default_option='1'" );
 
-		$wpdb->query( "SELECT * FROM $table WHERE default_option='1'" );
-
-		return $wpdb->num_rows == 0;
+		return $this->app->db->num_rows == 0;
 	}
 
 	public function getDefaultWidget() {

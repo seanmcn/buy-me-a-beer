@@ -1,11 +1,10 @@
 <?php
 
 namespace bmab;
-
 /**
- * Class BuyMeABeerPaypal
+ * Class Paypal
  */
-class BuyMeABeerPaypal {
+class Paypal {
 
 	protected $app;
 	protected $paypalApi;

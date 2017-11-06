@@ -2,9 +2,9 @@
 
 namespace bmab;
 /**
- * Class BuyMeABeerAdminAjax
+ * Class AdminAjaxActions
  */
-class BuyMeABeerAdminAjax {
+class AdminAjaxActions {
 
 
 	protected $app;

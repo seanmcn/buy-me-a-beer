@@ -17,6 +17,6 @@ if ( $_REQUEST ) {
 	$data      =  array_key_exists('bmabPaypal', $_SESSION) ? $_SESSION['bmabPaypal'] : FALSE;
 
 	$app    = new App();
-	$paypal = new BuyMeABeerPaypal( $app );
+	$paypal = new Paypal( $app );
 	$paypal->executePayment( $paymentId, $payerId, $data );
 }

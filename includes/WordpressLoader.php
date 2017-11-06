@@ -1,10 +1,12 @@
 <?php
 
 namespace bmab;
+
 /**
- * Class BuyMeABeerLoader
+ * Class WordpressLoader
+ * @package bmab
  */
-class BuyMeABeerLoader {
+class WordpressLoader {
 
 	/**
 	 * @var array

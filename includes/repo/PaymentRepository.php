@@ -63,12 +63,9 @@ class PaymentRepository extends BaseRepository {
 	 * @param PaymentModel $payment
 	 */
 	private function save( PaymentModel $payment ) {
-
-		global $wpdb, $bmabConfig;
-		$table = $wpdb->prefix . $bmabConfig->tables['payments'];
 		// Todo: sort this out with sprintf
-		$wpdb->insert(
-			$table,
+		$this->app->db->insert(
+			$this->table,
 			array(
 				'paypal_id'      => $payment->getExternalId(),
 				'email'          => $payment->getEmail(),

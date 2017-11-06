@@ -2,14 +2,8 @@
 
 namespace bmab;
 
-/**
- * Class BuyMeABeerPublic
- */
-/**
- * Class BuyMeABeerPublic
- * @package bmab
- */
-class BuyMeABeerPublic {
+
+class PublicActions {
 
 
 	/**

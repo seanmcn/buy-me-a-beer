@@ -2,7 +2,11 @@
 
 namespace bmab;
 
-class BuyMeABeerAdmin {
+/**
+ * Class AdminActions
+ * @package bmab
+ */
+class AdminActions {
 
 	private $app;
 
@@ -18,90 +22,6 @@ class BuyMeABeerAdmin {
 		$this->item_repo   = $this->app->repos['items'];
 	}
 
-	public function installation() {
-		global $wpdb, $bmabConfig;
-		global $dbVersion;
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-
-		$charset = $wpdb->get_charset_collate();
-
-		// Group Table
-		$table = $wpdb->prefix . $bmabConfig->tables['groups'];
-		$sql   = "CREATE TABLE $table (
-			id int NOT NULL AUTO_INCREMENT,
-			name VARCHAR(300),
-			UNIQUE KEY id(id)
-		) $charset;";
-
-		// Item Table
-		$table = $wpdb->prefix . $bmabConfig->tables['items'];
-		$sql   .= "CREATE TABLE $table (
-			id INT NOT NULL AUTO_INCREMENT,
-			name VARCHAR(300),
-			price INT NOT NULL,
-			UNIQUE KEY id(id)
-		) $charset;";
-
-		// Item Groups Table
-		$table = $wpdb->prefix . $bmabConfig->tables['item_groups'];
-		$sql   .= "CREATE TABLE $table (
-			item_id INT NOT NULL,
-			group_id INT NOT NULL,
-			PRIMARY KEY(item_id, group_id)
-		) $charset;";
-
-		// Payments Table
-		$table = $wpdb->prefix . $bmabConfig->tables['payments'];
-		$sql   .= "CREATE TABLE $table (
-			id INT NOT NULL AUTO_INCREMENT,
-			paypal_id varchar(300),
-			amount int(100),
-			email varchar(300),
-			first_name varchar(300),
-			last_name varchar(300),
-			address text,
-			payment_method varchar(300),
-			widget_id int(100),
-			url text,
-			time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-			UNIQUE KEY id (id)
-		) $charset;";
-
-		// Widget Table
-		$table = $wpdb->prefix . $bmabConfig->tables['widgets'];
-		$sql   .= "CREATE TABLE $table (
-			id INT NOT NULL AUTO_INCREMENT,
-			name VARCHAR(300),
-			title VARCHAR(300),
-			description text,
-			image VARCHAR(300),
-			is_default BOOLEAN,
-			UNIQUE KEY id(id)
-		) $charset;";
-
-		// Widget Group Table
-		$table = $wpdb->prefix . $bmabConfig->tables['widget_groups'];
-		$sql   .= "CREATE TABLE $table (
-			widget_id INT NOT NULL,
-			group_id INT NOT NULL,
-			PRIMARY KEY(widget_id, group_id)
-		) $charset;";
-
-		// Run queries and store schema version.
-		dbDelta( $sql );
-		add_option( 'bmabDatabaseVersion', $dbVersion );
-
-		// Seed the database
-		$this->item_repo->create( "1 Beer", 3 );
-		$this->item_repo->create( "6 Beers", 15 );
-		$this->item_repo->create( "12 Beers", 25 );
-		$this->item_repo->create( '36 Beers', 45 );
-		$this->item_repo->create( "Keg of Beer", 125 );
-
-		// Todo add group 'Default'
-		$this->widget_repo->create( 'Did I help you out?', 'If so how about buying me some beer?', '' );
-	}
-
 	/**
 	 * Front end CSS
 	 */
@@ -110,7 +30,6 @@ class BuyMeABeerAdmin {
 	}
 
 	public function adminEnqueueScripts() {
-		global $currencyMappings;
 		/* Admin JS gets loaded here */
 		wp_enqueue_script( 'jquery' );
 		wp_enqueue_script( 'thickbox' );
@@ -138,8 +57,8 @@ class BuyMeABeerAdmin {
 				'bmabNoty'
 			) );
 		$currency     = $this->app->currency;
-		$currencyPre  = $currencyMappings[ $currency ]['pre'];
-		$currencyPost = $currencyMappings[ $currency ]['post'];
+		$currencyPre  = $this->app->config->currencyMappings[ $currency ]['pre'];
+		$currencyPost = $this->app->config->currencyMappings[ $currency ]['post'];
 		wp_localize_script( 'bmabAdminJs', 'BuyMeABeer', array(
 			'currencyPre'  => $currencyPre,
 			'currencyPost' => $currencyPost
@@ -163,7 +82,7 @@ class BuyMeABeerAdmin {
 	}
 
 	function adminSettingsPage() {
-		require_once plugin_dir_path( __FILE__ ) . 'partials/settingsManager.php';
+		require_once plugin_dir_path( __FILE__ ) . 'partials/settings.php';
 	}
 
 	public function addPostWidget() {
@@ -190,7 +109,7 @@ class BuyMeABeerAdmin {
 //		}
 
 		$bmabWidgets = $this->widget_repo->getAll();
-		require_once plugin_dir_path( __FILE__ ) . 'partials/postManager.php';
+		require_once plugin_dir_path( __FILE__ ) . 'partials/createPost.php';
 	}
 
 	public function savePostWidget( $postId ) {
