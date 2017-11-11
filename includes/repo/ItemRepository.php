@@ -48,7 +48,9 @@ class ItemRepository extends BaseRepository {
 		$item = new ItemModel();
 		$item->setName( $name )
 		     ->setPrice( $price );
-		$this->save( $item );
+		$itemId = $this->save( $item );
+
+		return $itemId;
 	}
 
 	public function delete( $id ) {
@@ -64,8 +66,12 @@ class ItemRepository extends BaseRepository {
 
 		if ( $item->getId() ) {
 			$this->app->db->update( $this->table, $data, array( 'id' => $item->getId() ), $format, array( '%d' ) );
+
+			return $item->getId();
 		} else {
 			$this->app->db->insert( $this->table, $data, $format );
-		};
+
+			return $this->app->db->insert_id;
+		}
 	}
 }

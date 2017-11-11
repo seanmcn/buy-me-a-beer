@@ -1,6 +1,7 @@
 <?php
 
 namespace bmab;
+
 /**
  * Class AdminAjaxActions
  */
@@ -24,13 +25,17 @@ class AdminAjaxActions {
 	/** @var GroupRepository $groupRepo */
 	protected $groupRepo;
 
+	/** @var ItemGroupRepository $itemGroupRepo */
+	protected $itemGroupRepo;
+
 	function __construct( $app ) {
-		$this->app         = $app;
-		$this->widgetRepo  = $this->app->repos['widgets'];
-		$this->itemRepo    = $this->app->repos['items'];
-		$this->settingRepo = $this->app->repos['settings'];
-		$this->paymentRepo = $this->app->repos['payments'];
-		$this->groupRepo   = $this->app->repos['groups'];
+		$this->app           = $app;
+		$this->widgetRepo    = $this->app->repos['widgets'];
+		$this->itemRepo      = $this->app->repos['items'];
+		$this->settingRepo   = $this->app->repos['settings'];
+		$this->paymentRepo   = $this->app->repos['payments'];
+		$this->groupRepo     = $this->app->repos['groups'];
+		$this->itemGroupRepo = $this->app->repos['itemGroups'];
 	}
 
 	function formHandler() {
@@ -92,6 +97,59 @@ class AdminAjaxActions {
 				}
 				break;
 
+			case "addItem":
+				$name   = isset( $_REQUEST['name'] ) ? $_REQUEST['name'] : null;
+				$price  = isset( $_REQUEST['price'] ) ? $_REQUEST['price'] : null;
+				$groups = isset( $_REQUEST['groups'] ) ? $_REQUEST['groups'] : null;
+				if ( empty( $groups ) ) {
+					$error = [ "message" => "At least one group for the item is required", "type" => "error" ];
+					echo json_encode( $error );
+				} else if ( $name == null || $price == null ) {
+					$error = [ "message" => "Name and Price are required!", "type" => "error" ];
+					echo json_encode( $error );
+				} else {
+					$itemId = $this->itemRepo->create( $name, $price );
+					$this->itemGroupRepo->save( $itemId, $groups );
+					$message = [ "message" => "Item '$name' created", "type" => "success" ];
+					echo json_encode( $message );
+				}
+				break;
+
+			case "editItem":
+				$id     = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
+				$name   = isset( $_REQUEST['name'] ) ? $_REQUEST['name'] : null;
+				$price  = isset( $_REQUEST['price'] ) ? $_REQUEST['price'] : null;
+				$groups = isset( $_REQUEST['groups'] ) ? $_REQUEST['groups'] : null;
+
+				if ( empty( $groups ) ) {
+					$error = [ "message" => "At least one group for the item is required", "type" => "error" ];
+					echo json_encode( $error );
+				} elseif ( $id == null || $name == null || $price == null ) {
+					$error = [ "message" => "Name and Price are required!", "type" => "error" ];
+					echo json_encode( $error );
+				} else {
+					$itemId = $this->itemRepo->update( $id, $name, $price );
+					$this->itemGroupRepo->save( $itemId, $groups );
+					$message = [ "message" => "Item '$name' saved", "type" => "success" ];
+					echo json_encode( $message );
+				}
+				break;
+
+			case "deleteItem":
+				$id = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
+				if ( $id == null ) {
+					$error = [
+						"message" => "You didn't specify which item to delete",
+						"type"    => "error"
+					];
+					echo json_encode( $error );
+				} else {
+					$this->itemRepo->delete( $id );
+					$message = [ "message" => "Item has been deleted!", "type" => "success" ];
+					echo json_encode( $message );
+				}
+				break;
+
 			case "addWidget":
 				$title       = isset( $_REQUEST['title'] ) ? $_REQUEST['title'] : null;
 				$description = isset( $_REQUEST['description'] ) ? $_REQUEST['description'] : null;
@@ -144,49 +202,6 @@ class AdminAjaxActions {
 				} else {
 					$this->widgetRepo->delete( $id );
 					$message = [ "message" => "Widget has been deleted!", "type" => "success" ];
-					echo json_encode( $message );
-				}
-				break;
-
-			case "addItem":
-				$name  = isset( $_REQUEST['name'] ) ? $_REQUEST['name'] : null;
-				$price = isset( $_REQUEST['price'] ) ? $_REQUEST['price'] : null;
-				if ( $name == null || $price == null ) {
-					$error = [ "message" => "Name and Price are required!", "type" => "error" ];
-					echo json_encode( $error );
-				} else {
-					$this->itemRepo->create( $name, $price );
-					$message = [ "message" => "Item '$name' created", "type" => "success" ];
-					echo json_encode( $message );
-				}
-				break;
-
-			case "editItem":
-				$id    = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
-				$name  = isset( $_REQUEST['name'] ) ? $_REQUEST['name'] : null;
-				$price = isset( $_REQUEST['price'] ) ? $_REQUEST['price'] : null;
-
-				if ( $id == null || $name == null || $price == null ) {
-					$error = [ "message" => "Name and Price are required!", "type" => "error" ];
-					echo json_encode( $error );
-				} else {
-					$this->itemRepo->update( $id, $name, $price );
-					$message = [ "message" => "Item '$name' saved", "type" => "success" ];
-					echo json_encode( $message );
-				}
-				break;
-
-			case "deleteItem":
-				$id = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
-				if ( $id == null ) {
-					$error = [
-						"message" => "You didn't specify which item to delete",
-						"type"    => "error"
-					];
-					echo json_encode( $error );
-				} else {
-					$this->itemRepo->delete( $id );
-					$message = [ "message" => "Item has been deleted!", "type" => "success" ];
 					echo json_encode( $message );
 				}
 				break;

@@ -204,7 +204,7 @@ function bmabContentHandler(action, content) {
   }
 
   if (action === 'bmabAddItem') {
-    var addItemGroups = jQuery('#addItemGroups');
+    var addItemGroups = jQuery('#newItemGroups');
     addItemGroups.empty();
     for (var i = 0; i < content.length; i++) {
       var group = content[i];

@@ -44,6 +44,10 @@ class GroupRepository extends BaseRepository {
 		$this->app->db->delete( $this->table, array( 'id' => $id ), array( '%d' ) );
 	}
 
+	public function addGroupsToItem( $itemId, $groups ) {
+
+	}
+
 	private function save( GroupModel $group ) {
 		$data   = array(
 			'name' => $group->getName(),

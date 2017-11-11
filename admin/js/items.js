@@ -35,11 +35,14 @@ jQuery(document).ready(function($) {
 function bmabAddItem() {
   var name = jQuery('#newItemName').val();
   var price = jQuery('#newItemPrice').val();
+  var groups = jQuery('#newItemGroups').val();
+
   jQuery.post(ajaxurl, {
         action: 'bmab_formHandler',
         run: 'addItem',
         name: name,
         price: price,
+    groups: groups,
       }, function(data) {
         bmabAlertMessage(data.message, data.type);
         bmabPage('bmabViewItems');

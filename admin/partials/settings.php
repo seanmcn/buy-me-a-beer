@@ -271,10 +271,10 @@
             </tr>
             <tr>
                 <th scope="row">
-                    <label for="addItemGroups">Groups:</label>
+                    <label for="newItemGroups">Groups:</label>
                 </th>
                 <td>
-                    <select id="addItemGroups" multiple>
+                    <select id="newItemGroups" multiple>
                     </select>
                 </td>
             </tr>
