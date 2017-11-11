@@ -270,6 +270,15 @@
                 </td>
             </tr>
             <tr>
+                <th scope="row">
+                    <label for="addItemGroups">Groups:</label>
+                </th>
+                <td>
+                    <select id="addItemGroups" multiple>
+                    </select>
+                </td>
+            </tr>
+            <tr>
                 <td></td>
                 <td>
                     <button id="bmabViewItems" class="bmabPage button button-secondary">Cancel</button>
@@ -299,6 +308,15 @@
                 </th>
                 <td>
                     <input type="text" id="editItemPrice">
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="editItemGroups">Groups:</label>
+                </th>
+                <td>
+                    <select id="editItemGroups" multiple>
+                    </select>
                 </td>
             </tr>
             <tr>

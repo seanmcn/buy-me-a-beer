@@ -42,7 +42,7 @@ class AdminActions {
 				'jquery'
 			) );
 
-		wp_register_script( 'bmabImageUploaderJs', plugins_url( 'admin/js/imageUploader.js', __DIR__ ),
+		wp_register_script( 'bmabImageUploaderJs', plugins_url( 'admin/js/helper/imageUploader.js', __DIR__ ),
 			array
 			(
 				'jquery',
@@ -56,15 +56,37 @@ class AdminActions {
 				'jquery',
 				'bmabNoty'
 			) );
+
+		wp_register_script( 'bmabAdminJsGroups', plugins_url( 'admin/js/groups.js', __DIR__ ),
+			array(
+				'bmabAdminJs'
+			) );
+
+		wp_register_script( 'bmabAdminJsItems', plugins_url( 'admin/js/items.js', __DIR__ ),
+			array(
+				'bmabAdminJs'
+			) );
+
+		wp_register_script( 'bmabAdminJsWidgets', plugins_url( 'admin/js/widgets.js', __DIR__ ),
+			array(
+				'bmabAdminJs'
+			) );
+
 		$currency     = $this->app->currency;
 		$currencyPre  = $this->app->config->currencyMappings[ $currency ]['pre'];
 		$currencyPost = $this->app->config->currencyMappings[ $currency ]['post'];
+
+
 		wp_localize_script( 'bmabAdminJs', 'BuyMeABeer', array(
 			'currencyPre'  => $currencyPre,
 			'currencyPost' => $currencyPost
 		) );
 
+		// Todo: Minify later.
 		wp_enqueue_script( 'bmabAdminJs' );
+		wp_enqueue_script( 'bmabAdminJsGroups' );
+		wp_enqueue_script( 'bmabAdminJsItems' );
+		wp_enqueue_script( 'bmabAdminJsWidgets' );
 
 		/* Admin CSS gets loaded here */
 		wp_register_style( 'bmabAdminCss', plugins_url( 'admin/css/main.css', __DIR__ ) );

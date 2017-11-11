@@ -1,6 +1,10 @@
 jQuery.noConflict();
 jQuery(document).ready(function($) {
   var body = $('body');
+
+  /**
+   * Page / Action binds
+   */
   body.on('click', '.bmabPage', function(e) {
     e.preventDefault();
     var id = $(this).attr('id');
@@ -11,61 +15,11 @@ jQuery(document).ready(function($) {
     var id = $(this).attr('id');
     bmabAction(id);
   });
-  body.on('click', '.bmabEditWidget', function(e) {
-    e.preventDefault();
-    var action = 'bmabEditWidget';
-    var id = $(this).attr('id');
-    bmabPage(action);
-    bmabLoadWidget(action, id);
-  });
-  body.on('click', '.bmabDefaultWidget', function(e) {
-    e.preventDefault();
-    var id = $(this).attr('id');
-    bmabSetDefaultWidget(id);
-  });
-  body.on('click', '.bmabDeleteWidget', function(e) {
-    e.preventDefault();
-    var id = $(this).attr('id');
-    bmabDeleteWidget(id);
-  });
-  body.on('click', '#bmabWidgetBulk', function(e) {
-    e.preventDefault();
-    //Todo Sean: fix, better jQuery usage
-    var option = $('#bmabWidgetBulkOption').children(':selected').attr('id');
-    var selectedIds = $('.bmabWidgetsRow input:checked').map(function(i, el) {
-      return el.name;
-    }).get();
-    if (option === 'delete') {
-      bmabMultiDeleteWidgets(selectedIds);
-    }
-  });
-  body.on('click', '.bmabEditItem', function(e) {
-    e.preventDefault();
-    var action = 'bmabEditItem';
-    var id = $(this).attr('id');
-    bmabPage(action);
-    bmabLoadItem(action, id);
-  });
-  body.on('click', '.bmabDeleteItem', function(e) {
-    e.preventDefault();
-    var id = $(this).attr('id');
-    bmabDeleteItem(id);
-  });
-  body.on('click', '#bmabItemBulk', function(e) {
-    console.log('click #bmabItemBulk');
-    e.preventDefault();
-    var option = $('#bmabItemBulkOption').children(':selected').attr('id');
-    console.log('Option = ', option);
 
-    var selectedIds = $('.bmabItemsRow input:checked').map(function(i, el) {
-      return el.name;
-    }).get();
+  /**
+   * Misc binds
+   */
 
-    console.log('selected ids', selectedIds);
-    if (option === 'delete') {
-      bmabMultiDeleteItems(selectedIds);
-    }
-  });
   $('tbody').on('hover', 'tr', function() {
     $('tr').removeClass('active');
     $(this).addClass('active');
@@ -75,6 +29,7 @@ jQuery(document).ready(function($) {
     $('.tdPreview').hide();
     $('#' + id + '.tdPreview').show();
   });
+
   body.on('change', '#bmabActive', function(e) {
     var id = $(this).children(':selected').attr('id');
     if (id === 'on') {
@@ -83,8 +38,6 @@ jQuery(document).ready(function($) {
     if (id === 'off') {
       $('.bmabWrapper').css('display', 'none');
     }
-    //$('.tdPreview').hide();
-    //$('#'+id+'.tdPreview').show();
   });
 });
 
@@ -95,11 +48,12 @@ function bmabAction(action) {
   if (action === 'settings') {
     bmabSaveSettings();
   }
-  else if (action === 'bmabAddWidget') {
-    bmabAddWidget();
+
+  else if (action === 'bmabAddGroup') {
+    bmabAddGroup();
   }
-  else if (action === 'bmabEditWidget') {
-    bmabEditWidget();
+  else if (action === 'bmabEditGroup') {
+    bmabEditGroup();
   }
   else if (action === 'bmabAddItem') {
     bmabAddItem();
@@ -107,6 +61,13 @@ function bmabAction(action) {
   else if (action === 'bmabEditItem') {
     bmabEditItem();
   }
+  else if (action === 'bmabAddWidget') {
+    bmabAddWidget();
+  }
+  else if (action === 'bmabEditWidget') {
+    bmabEditWidget();
+  }
+
 }
 
 function bmabContent(action) {
@@ -119,6 +80,31 @@ function bmabContent(action) {
 }
 
 function bmabContentHandler(action, content) {
+  if (action === 'bmabViewGroups') {
+    jQuery('#bmabGroupsContent').empty();
+    jQuery.each(content, function(index, value) {
+      var bmabHtml = '<tr class="bmabGroupsRow">' +
+          '<th scope="row" class="check-column">' +
+          '<input type="checkbox" class="bmabCheckedGroups" name="' + value.id +
+          '">' +
+          '</th>' +
+          '<td class="column-name">' +
+          value.name +
+          '<div class="row-actions visible">' +
+          '<span class="deactivate">' +
+          '<a href="#" class="bmabDeleteGroup" id="' + value.id +
+          '">Delete</a> |' +
+          '</span>' +
+          '<span class="edit">' +
+          '<a href="#" class="bmabEditGroup" id="' + value.id + '">Edit</a>' +
+          '</span>' +
+          '</div>' +
+          '</td>' +
+          '</tr>';
+      jQuery(bmabHtml).appendTo('#bmabGroupsContent');
+    });
+  }
+
   if (action === 'bmabViewItems') {
     jQuery('#bmabItemsContent').empty();
     jQuery.each(content, function(index, value) {
@@ -140,12 +126,37 @@ function bmabContentHandler(action, content) {
           '</div>' +
           '</td>' +
           '<td class="column-price">' +
-          value.price +
+          BuyMeABeer.currencyPre + value.price + BuyMeABeer.currencyPost +
           '</td>' +
           '</tr>';
       jQuery(bmabHtml).appendTo('#bmabItemsContent');
     });
   }
+
+  if (action === 'bmabViewPayments') {
+    jQuery('#bmabPaymentsContent').empty();
+    jQuery.each(content, function(index, value) {
+      var bmabHtml = '<tr>' +
+          '<td>' + value.paypal_id + '</td>' +
+          '<td>' + BuyMeABeer.currencyPre + value.amount +
+          BuyMeABeer.currencyPost + '</td>' +
+          '<td>' + value.email + '</td>' +
+          '<td>' + value.first_name + ' ' + value.last_name + '</td>' +
+          '<td>' + value.time + '</td>';
+      if (value.url !== undefined && !!value.url) {
+        bmabHtml += '<td><a href="' + value.url + '" target="_blank">' +
+            value.url + '</a></td>';
+      }
+      else {
+        bmabHtml += '<td>Unknown URL</td>';
+      }
+      // bmabHtml += '<td>' + value.title + '</td>' +
+      bmabHtml += '</tr>'
+      ;
+      jQuery(bmabHtml).appendTo('#bmabPaymentsContent');
+    });
+  }
+
   if (action === 'bmabViewWidgets') {
     jQuery('#bmabWidgetsContent').empty();
     jQuery.each(content, function(index, value) {
@@ -191,29 +202,16 @@ function bmabContentHandler(action, content) {
       jQuery(bmabHtml).appendTo('#bmabWidgetsContent');
     });
   }
-  if (action === 'bmabViewPayments') {
-    // Todo Sean: add currency to amount
-    jQuery('#bmabPaymentsContent').empty();
-    jQuery.each(content, function(index, value) {
-      var bmabHtml = '<tr>' +
-          '<td>' + value.paypal_id + '</td>' +
-          '<td>' + BuyMeABeer.currencyPre + value.amount +
-          BuyMeABeer.currencyPost + '</td>' +
-          '<td>' + value.email + '</td>' +
-          '<td>' + value.first_name + ' ' + value.last_name + '</td>' +
-          '<td>' + value.time + '</td>';
-      if (value.url !== undefined && !!value.url) {
-        bmabHtml += '<td><a href="' + value.url + '" target="_blank">' +
-            value.url + '</a></td>';
-      }
-      else {
-        bmabHtml += '<td>Unknown URL</td>';
-      }
-      // bmabHtml += '<td>' + value.title + '</td>' +
-      bmabHtml += '</tr>'
-      ;
-      jQuery(bmabHtml).appendTo('#bmabPaymentsContent');
-    });
+
+  if (action === 'bmabAddItem') {
+    var addItemGroups = jQuery('#addItemGroups');
+    addItemGroups.empty();
+    for (var i = 0; i < content.length; i++) {
+      var group = content[i];
+      addItemGroups.append('<option id=\'' + group.id + '\' value=\'' +
+          group.id +
+          '\'>' + group.name + '</option>');
+    }
   }
 }
 
@@ -230,6 +228,9 @@ function bmabInit() {
   bmabPage(id);
 }
 
+/**
+ * Settings
+ */
 function bmabSaveSettings() {
   var displayMode = jQuery('#bmabDisplayMode').find('option:selected').val();
   var paypalEmail = jQuery('#paypalEmail').val();
@@ -257,172 +258,9 @@ function bmabSaveSettings() {
   );
 }
 
-function bmabAddWidget() {
-  var title = jQuery('#newWidgetTitle').val();
-  var description = jQuery('#newWidgetDescription').val();
-  var image = jQuery('#newWidgetImage').val();
-  jQuery.post(ajaxurl, {
-        action: 'bmab_formHandler',
-        run: 'addWidget',
-        title: title,
-        description: description,
-        image: image,
-      }, function(data) {
-        bmabAlertMessage(data.message, data.type);
-        bmabPage('bmabViewWidgets');
-      }, 'JSON'
-  );
-}
-
-function bmabLoadWidget(action, id) {
-  jQuery.post(ajaxurl, {
-        action: 'bmab_contentHandler',
-        run: action,
-        id: id,
-      }, function(data) {
-      }, 'json'
-  ).done(function(data) {
-    jQuery('#editWidgetTitle').val(data.title);
-    jQuery('#editWidgetDescription').val(data.description);
-    jQuery('#editWidgetImage').val(data.image);
-    jQuery('#editWidgetId').val(data.id);
-  });
-}
-
-function bmabEditWidget() {
-  var title = jQuery('#editWidgetTitle').val();
-  var description = jQuery('#editWidgetDescription').val();
-  var image = jQuery('#editWidgetImage').val();
-  var id = jQuery('#editWidgetId').val();
-  jQuery.post(ajaxurl, {
-        action: 'bmab_formHandler',
-        run: 'editWidget',
-        id: id,
-        title: title,
-        description: description,
-        image: image,
-      }, function(data) {
-        bmabAlertMessage(data.message, data.type);
-        bmabPage('bmabViewWidgets');
-      }, 'JSON'
-  );
-}
-
-function bmabSetDefaultWidget(id) {
-  jQuery.post(ajaxurl, {
-        action: 'bmab_formHandler',
-        run: 'defaultWidget',
-        id: id,
-      }, function(data) {
-        bmabAlertMessage(data.message, data.type);
-        bmabPage('bmabViewWidgets');
-      }, 'JSON'
-  );
-}
-
-function bmabMultiDeleteWidgets(ids) {
-  for (index = 0; index < ids.length; ++index) {
-    id = ids[index];
-    jQuery.post(ajaxurl, {
-          action: 'bmab_formHandler',
-          run: 'deleteWidget',
-          id: id,
-        }, function(data) {
-        }, 'JSON'
-    );
-  }
-  bmabAlertMessage('Widgets deleted!', 'success');
-  bmabPage('bmabViewWidgets');
-}
-
-function bmabDeleteWidget(id) {
-  jQuery.post(ajaxurl, {
-        action: 'bmab_formHandler',
-        run: 'deleteWidget',
-        id: id,
-      }, function(data) {
-        bmabAlertMessage(data.message, data.type);
-        bmabPage('bmabViewWidgets');
-      }, 'JSON'
-  );
-}
-
-function bmabAddItem() {
-  var name = jQuery('#newItemName').val();
-  var price = jQuery('#newItemPrice').val();
-  jQuery.post(ajaxurl, {
-        action: 'bmab_formHandler',
-        run: 'addItem',
-        name: name,
-        price: price,
-      }, function(data) {
-        bmabAlertMessage(data.message, data.type);
-        bmabPage('bmabViewItems');
-      }, 'JSON'
-  );
-}
-
-function bmabLoadItem(action, id) {
-  jQuery.post(ajaxurl, {
-        action: 'bmab_contentHandler',
-        run: action,
-        id: id,
-      }, function(data) {
-      }, 'json'
-  ).done(function(data) {
-    jQuery('#editItemName').val(data.name);
-    jQuery('#editItemPrice').val(data.price);
-    jQuery('#editItemId').val(data.id);
-  });
-}
-
-function bmabEditItem() {
-  var id = jQuery('#editItemId').val();
-  var name = jQuery('#editItemName').val();
-  var price = jQuery('#editItemPrice').val();
-  jQuery.post(ajaxurl, {
-        action: 'bmab_formHandler',
-        run: 'editItem',
-        id: id,
-        name: name,
-        price: price,
-      }, function(data) {
-        bmabAlertMessage(data.message, data.type);
-        bmabPage('bmabViewItems');
-      }, 'JSON'
-  );
-}
-
-function bmabMultiDeleteItems(ids) {
-  console.log('Deleting ids', ids);
-  var index;
-  for (index = 0; index < ids.length; ++index) {
-    var id = ids[index];
-    console.log('Hitting delete item for ', id);
-    jQuery.post(ajaxurl, {
-          action: 'bmab_formHandler',
-          run: 'deleteItem',
-          id: id,
-        }, function(data) {
-        }, 'JSON'
-    );
-  }
-  bmabAlertMessage('Items deleted!', 'success');
-  bmabPage('bmabViewItems');
-}
-
-function bmabDeleteItem(id) {
-  jQuery.post(ajaxurl, {
-        action: 'bmab_formHandler',
-        run: 'deleteItem',
-        id: id,
-      }, function(data) {
-        bmabAlertMessage(data.message, data.type);
-        bmabPage('bmabViewItems');
-      }, 'JSON'
-  );
-}
-
+/**
+ * Misc
+ */
 function bmabAlertMessage(message, type) {
   console.log(message, type);
   jQuery('#alertArea').noty({

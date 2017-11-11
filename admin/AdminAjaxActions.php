@@ -21,12 +21,16 @@ class AdminAjaxActions {
 	/** @var PaymentRepository $paymentRepo */
 	protected $paymentRepo;
 
+	/** @var GroupRepository $groupRepo */
+	protected $groupRepo;
+
 	function __construct( $app ) {
 		$this->app         = $app;
 		$this->widgetRepo  = $this->app->repos['widgets'];
 		$this->itemRepo    = $this->app->repos['items'];
 		$this->settingRepo = $this->app->repos['settings'];
 		$this->paymentRepo = $this->app->repos['payments'];
+		$this->groupRepo   = $this->app->repos['groups'];
 	}
 
 	function formHandler() {
@@ -47,6 +51,45 @@ class AdminAjaxActions {
 					$displayMode, $successPage, $errorPage );
 				$message = [ "message" => "Settings saved", "type" => "success" ];
 				echo json_encode( $message );
+				break;
+
+			case "addGroup":
+				$name = isset( $_REQUEST['name'] ) ? $_REQUEST['name'] : null;
+
+				if ( $name == null ) {
+					$error = [ "message" => "Name is required!", "type" => "error" ];
+					echo json_encode( $error );
+				} else {
+					$this->groupRepo->create( $name );
+					$message = [ "message" => "Group created", "type" => "success" ];
+					echo json_encode( $message );
+				}
+				break;
+
+			case "editGroup":
+				$id   = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
+				$name = isset( $_REQUEST['name'] ) ? $_REQUEST['name'] : null;
+
+				if ( $id == null || $name == null ) {
+					$error = [ "message" => "Name is required!", "type" => "error" ];
+					echo json_encode( $error );
+				} else {
+					$this->groupRepo->update( $id, $name );
+					$message = [ "message" => "Group saved!", "type" => "success" ];
+					echo json_encode( $message );
+				}
+				break;
+
+			case "deleteGroup":
+				$id = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
+				if ( $id == null ) {
+					$error = [ "message" => "Error", "type" => "error" ];
+					echo json_encode( $error );
+				} else {
+					$this->groupRepo->delete( $id );
+					$message = [ "message" => "Group has been deleted!", "type" => "success" ];
+					echo json_encode( $message );
+				}
 				break;
 
 			case "addWidget":
@@ -161,14 +204,32 @@ class AdminAjaxActions {
 
 		$data = [ "message" => "Something went wrong while making your request!", "type" => "error" ];
 		switch ( $action ) {
+
+			case "bmabViewGroups":
+				$data = $this->groupRepo->getAll();
+				break;
+
+			case "bmabEditGroup":
+				$id = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
+				if ( $id !== null ) {
+					$data = $this->groupRepo->get( $id );
+				}
+				break;
+
 			case "bmabViewItems":
 				$data = $this->itemRepo->getAll();
+				break;
+
+			case "bmabAddItem":
+				$data = $this->groupRepo->getAll();
 				break;
 
 			case "bmabEditItem":
 				$id = isset( $_REQUEST['id'] ) ? $_REQUEST['id'] : null;
 				if ( $id !== null ) {
-					$data = $this->itemRepo->get( $id );
+					$data           = [];
+					$data['item']   = $this->itemRepo->get( $id );
+					$data['groups'] = $this->groupRepo->getAll();
 				}
 				break;
 

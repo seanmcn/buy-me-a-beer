@@ -8,6 +8,9 @@ require_once plugin_dir_path( __DIR__ ) . 'includes/WordpressLoader.php';
 
 require_once plugin_dir_path( __DIR__ ) . "includes/repo/BaseRepository.php";
 
+require_once plugin_dir_path( __DIR__ ) . "includes/model/GroupModel.php";
+require_once plugin_dir_path( __DIR__ ) . "includes/repo/GroupRepository.php";
+
 require_once plugin_dir_path( __DIR__ ) . "includes/model/ItemModel.php";
 require_once plugin_dir_path( __DIR__ ) . "includes/repo/ItemRepository.php";
 
@@ -15,7 +18,6 @@ require_once plugin_dir_path( __DIR__ ) . "includes/model/PaymentModel.php";
 require_once plugin_dir_path( __DIR__ ) . "includes/repo/PaymentRepository.php";
 
 require_once plugin_dir_path( __DIR__ ) . "includes/repo/SettingRepository.php";
-
 
 require_once plugin_dir_path( __DIR__ ) . "includes/model/WidgetModel.php";
 require_once plugin_dir_path( __DIR__ ) . "includes/repo/WidgetRepository.php";
@@ -69,10 +71,11 @@ class App {
 		$this->currency = get_option( 'bmabCurrency', 'USD' );
 
 		$this->repos = array(
-			'widgets'  => new WidgetRepository( $this ),
+			'groups'   => new GroupRepository( $this ),
 			'items'    => new ItemRepository( $this ),
 			'payments' => new PaymentRepository( $this ),
-			'settings' => new SettingRepository( $this )
+			'settings' => new SettingRepository( $this ),
+			'widgets'  => new WidgetRepository( $this ),
 		);
 
 		$this->loadIntoWordpress();
